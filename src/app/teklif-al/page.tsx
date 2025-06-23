@@ -132,13 +132,9 @@ export default function QuotePage() {
 
   const totalSteps = 3
 
-  // Optimized form update function to prevent unnecessary re-renders
-  const updateFormData = useCallback((field: keyof FormData, value: any) => {
-    setFormData(prev => {
-      // Eğer değer değişmemişse state güncellemesi yapma
-      if (prev[field] === value) return prev
-      return { ...prev, [field]: value }
-    })
+  // Stable form update function
+  const handleFormUpdate = useCallback((updates: Partial<FormData>) => {
+    setFormData(prev => ({ ...prev, ...updates }))
   }, [])
 
   const nextStep = () => {
@@ -153,8 +149,26 @@ export default function QuotePage() {
     }
   }
 
-  // Step 1: Quote Type + Category Selection
-  const QuoteTypeAndCategoryStep = () => (
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return formData.quoteType !== '' && formData.category !== ''
+      case 2:
+        return formData.projectDetails !== '' && formData.budget !== '' && formData.timeline !== ''
+      case 3:
+        return formData.companyName !== '' && formData.contactPerson !== '' && formData.email !== '' && formData.phone !== ''
+      default:
+        return false
+    }
+  }
+
+  const handleSubmit = () => {
+    console.log('Form submitted:', formData)
+    alert('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+  }
+
+  // Step Components with stable structure
+  const StepOne = () => (
     <div className="space-y-10">
       {/* Quote Type Selection */}
       <div>
@@ -163,7 +177,7 @@ export default function QuotePage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div 
-            onClick={() => updateFormData('quoteType', 'product')}
+            onClick={() => handleFormUpdate({ quoteType: 'product' })}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'product' 
                 ? 'border-blue-500 bg-blue-50 shadow-md' 
@@ -183,7 +197,7 @@ export default function QuotePage() {
           </div>
 
           <div 
-            onClick={() => updateFormData('quoteType', 'solution')}
+            onClick={() => handleFormUpdate({ quoteType: 'solution' })}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'solution' 
                 ? 'border-purple-500 bg-purple-50 shadow-md' 
@@ -207,26 +221,24 @@ export default function QuotePage() {
       {/* Category Selection */}
       {formData.quoteType && (
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-3">
-            {formData.quoteType === 'product' ? 'Hangi kategoride ürün arıyorsunuz?' : 'Hangi alanda çözüm istiyorsunuz?'}
-          </h3>
-          <p className="text-gray-600 mb-6">İhtiyacınıza en uygun kategoriyi seçin</p>
-
+          <h3 className="text-xl font-bold text-gray-900 mb-3">Kategori Seçimi</h3>
+          <p className="text-gray-600 mb-6">Hangi alanda hizmet almak istiyorsunuz?</p>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {categories.map((category) => {
               const IconComponent = category.icon
               return (
                 <div
                   key={category.id}
-                  onClick={() => updateFormData('category', category.id)}
+                  onClick={() => handleFormUpdate({ category: category.id })}
                   className={`group cursor-pointer rounded-xl border-2 p-5 transition-all duration-300 hover:shadow-lg ${
                     formData.category === category.id
                       ? 'border-blue-500 bg-blue-50 shadow-md'
                       : 'border-gray-200 hover:border-blue-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center transition-all duration-300 group-hover:scale-105`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center`}>
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
                     {formData.category === category.id && (
@@ -234,28 +246,7 @@ export default function QuotePage() {
                     )}
                   </div>
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">{category.name}</h4>
-                  <p className="text-sm text-gray-600 mb-3">{category.description}</p>
-                  
-                  {formData.category === category.id && (
-                    <div className="mt-4 space-y-2">
-                      <h5 className="font-medium text-gray-900 text-sm">Alt kategoriler:</h5>
-                      <div className="space-y-2">
-                        {category.subcategories.map((sub) => (
-                          <label key={sub} className="flex items-center space-x-3 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="subcategory"
-                              value={sub}
-                              checked={formData.subcategory === sub}
-                              onChange={(e) => updateFormData('subcategory', e.target.value)}
-                              className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">{sub}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-sm text-gray-600">{category.description}</p>
                 </div>
               )
             })}
@@ -263,24 +254,42 @@ export default function QuotePage() {
         </div>
       )}
 
-      {/* Custom Requirements */}
+      {/* Subcategory Selection */}
       {formData.category && (
         <div>
-          <label className="text-xl font-semibold text-gray-900 mb-3 block">Özel İhtiyaçlarınız</label>
-          <textarea
-            value={formData.customRequirement || ''}
-                          onChange={(e) => updateFormData('customRequirement', e.target.value)}
-            placeholder="Özel gereksinimlerinizi, teknik detayları veya merak ettiklerinizi yazın..."
-            className="w-full h-28 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            rows={3}
-          />
+          <h3 className="text-xl font-bold text-gray-900 mb-3">Alt Kategori</h3>
+          <div className="space-y-3">
+            {categories.find(cat => cat.id === formData.category)?.subcategories.map((sub) => (
+              <label key={sub} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <input
+                  type="radio"
+                  name="subcategory"
+                  value={sub}
+                  checked={formData.subcategory === sub}
+                  onChange={(e) => handleFormUpdate({ subcategory: e.target.value })}
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{sub}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Özel Gereksinimler (Opsiyonel)</label>
+            <textarea
+              value={formData.customRequirement}
+              onChange={(e) => handleFormUpdate({ customRequirement: e.target.value })}
+              placeholder="Özel gereksinimlerinizi, teknik detayları veya merak ettiklerinizi yazın..."
+              className="w-full h-28 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              rows={3}
+            />
+          </div>
         </div>
       )}
     </div>
   )
 
-  // Step 2: Project Details + Budget/Timeline
-  const ProjectDetailsStep = () => (
+  const StepTwo = () => (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Proje Detayları</h2>
@@ -294,9 +303,9 @@ export default function QuotePage() {
               <DocumentTextIcon className="w-5 h-5" />
               <span>Proje Tanımı</span>
             </label>
-                          <textarea
-              value={formData.projectDetails || ''}
-              onChange={(e) => updateFormData('projectDetails', e.target.value)}
+            <textarea
+              value={formData.projectDetails}
+              onChange={(e) => handleFormUpdate({ projectDetails: e.target.value })}
               placeholder="Projenizi detaylı olarak açıklayın. Hangi analizler yapacaksınız, nasıl bir laboratuvar kuruyorsunuz, hangi sektörde çalışıyorsunuz..."
               className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={4}
@@ -321,10 +330,9 @@ export default function QuotePage() {
                 multiple
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                 className="hidden"
-                aria-label="Dosya Seçin"
                 onChange={(e) => {
                   if (e.target.files) {
-                    updateFormData('files', Array.from(e.target.files!))
+                    handleFormUpdate({ files: Array.from(e.target.files) })
                   }
                 }}
               />
@@ -357,7 +365,7 @@ export default function QuotePage() {
                     name="budget"
                     value={range}
                     checked={formData.budget === range}
-                    onChange={(e) => updateFormData('budget', e.target.value)}
+                    onChange={(e) => handleFormUpdate({ budget: e.target.value })}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{range}</span>
@@ -379,7 +387,7 @@ export default function QuotePage() {
                     name="timeline"
                     value={timeline}
                     checked={formData.timeline === timeline}
-                    onChange={(e) => updateFormData('timeline', e.target.value)}
+                    onChange={(e) => handleFormUpdate({ timeline: e.target.value })}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{timeline}</span>
@@ -392,8 +400,7 @@ export default function QuotePage() {
     </div>
   )
 
-  // Step 3: Contact Information
-  const ContactStep = () => (
+  const StepThree = () => (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-3">İletişim Bilgileri</h2>
@@ -406,8 +413,8 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Şirket/Kurum Adı *</label>
             <input
               type="text"
-              value={formData.companyName || ''}
-              onChange={(e) => updateFormData('companyName', e.target.value)}
+              value={formData.companyName}
+              onChange={(e) => handleFormUpdate({ companyName: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Şirket adınızı girin"
               required
@@ -418,8 +425,8 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">İletişim Kişisi *</label>
             <input
               type="text"
-              value={formData.contactPerson || ''}
-              onChange={(e) => updateFormData('contactPerson', e.target.value)}
+              value={formData.contactPerson}
+              onChange={(e) => handleFormUpdate({ contactPerson: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Adınız ve soyadınız"
               required
@@ -430,8 +437,8 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Pozisyon/Unvan</label>
             <input
               type="text"
-              value={formData.position || ''}
-              onChange={(e) => updateFormData('position', e.target.value)}
+              value={formData.position}
+              onChange={(e) => handleFormUpdate({ position: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Pozisyonunuz veya ünvanınız"
             />
@@ -443,8 +450,8 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">E-posta *</label>
             <input
               type="email"
-              value={formData.email || ''}
-              onChange={(e) => updateFormData('email', e.target.value)}
+              value={formData.email}
+              onChange={(e) => handleFormUpdate({ email: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="email@example.com"
               required
@@ -455,8 +462,8 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Telefon *</label>
             <input
               type="tel"
-              value={formData.phone || ''}
-              onChange={(e) => updateFormData('phone', e.target.value)}
+              value={formData.phone}
+              onChange={(e) => handleFormUpdate({ phone: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="+90 xxx xxx xx xx"
               required
@@ -487,39 +494,28 @@ export default function QuotePage() {
       id: 1,
       title: 'İhtiyaç Tespiti',
       description: 'Teklif türü ve kategori',
-      component: QuoteTypeAndCategoryStep
+      component: StepOne
     },
     {
       id: 2,
       title: 'Proje Detayları',
       description: 'Bütçe ve zaman planı',
-      component: ProjectDetailsStep
+      component: StepTwo
     },
     {
       id: 3,
       title: 'İletişim Bilgileri',
       description: 'İletişim ve gönderim',
-      component: ContactStep
+      component: StepThree
     }
-  ], [QuoteTypeAndCategoryStep, ProjectDetailsStep, ContactStep])
+  ], [StepOne, StepTwo, StepThree])
 
-  const isStepValid = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.quoteType !== '' && formData.category !== ''
-      case 2:
-        return formData.projectDetails !== '' && formData.budget !== '' && formData.timeline !== ''
-      case 3:
-        return formData.companyName !== '' && formData.contactPerson !== '' && formData.email !== '' && formData.phone !== ''
-      default:
-        return false
-    }
-  }
-
-  const handleSubmit = () => {
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData)
-    alert('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+  const renderCurrentStep = () => {
+    const currentStepData = steps.find(step => step.id === currentStep)
+    if (!currentStepData) return null
+    
+    const StepComponent = currentStepData.component
+    return <StepComponent />
   }
 
   return (
@@ -574,11 +570,7 @@ export default function QuotePage() {
           {/* Main Content */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 lg:p-12">
-              {(() => {
-                const currentStepData = steps.find(step => step.id === currentStep)
-                const StepComponent = currentStepData?.component
-                return StepComponent ? <StepComponent /> : null
-              })()}
+              {renderCurrentStep()}
             </div>
 
             {/* Navigation */}

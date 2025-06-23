@@ -951,7 +951,7 @@ export default function Header() {
               <Link href="/" className="flex items-center group">
                 <div className="relative">
                   <Image 
-                    src="/images/logo-protek.png" 
+                    src="/images/favicon.png" 
                     alt="Protek Analitik Logo" 
                     className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
                     width={100}
