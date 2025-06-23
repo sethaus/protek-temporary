@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import Header from '@/components/layout/Header'
 import { 
   CheckIcon, 
@@ -482,26 +482,26 @@ export default function QuotePage() {
     </div>
   )
 
-  const steps = [
+  const steps = useMemo(() => [
     {
       id: 1,
       title: 'İhtiyaç Tespiti',
       description: 'Teklif türü ve kategori',
-      component: <QuoteTypeAndCategoryStep />
+      component: QuoteTypeAndCategoryStep
     },
     {
       id: 2,
       title: 'Proje Detayları',
       description: 'Bütçe ve zaman planı',
-      component: <ProjectDetailsStep />
+      component: ProjectDetailsStep
     },
     {
       id: 3,
       title: 'İletişim Bilgileri',
       description: 'İletişim ve gönderim',
-      component: <ContactStep />
+      component: ContactStep
     }
-  ]
+  ], [QuoteTypeAndCategoryStep, ProjectDetailsStep, ContactStep])
 
   const isStepValid = () => {
     switch (currentStep) {
@@ -574,7 +574,11 @@ export default function QuotePage() {
           {/* Main Content */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 lg:p-12">
-              {steps.find(step => step.id === currentStep)?.component}
+              {(() => {
+                const currentStepData = steps.find(step => step.id === currentStep)
+                const StepComponent = currentStepData?.component
+                return StepComponent ? <StepComponent /> : null
+              })()}
             </div>
 
             {/* Navigation */}
