@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState } from 'react'
 import Header from '@/components/layout/Header'
 import { 
   CheckIcon, 
@@ -16,11 +16,6 @@ import {
   PaperClipIcon,
   CheckCircleIcon,
   SparklesIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  UserIcon,
-  BuildingOfficeIcon,
-  StarIcon,
   ClockIcon,
   CurrencyDollarIcon,
   DocumentTextIcon
@@ -132,11 +127,6 @@ export default function QuotePage() {
 
   const totalSteps = 3
 
-  // Stable form update function
-  const handleFormUpdate = useCallback((updates: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }))
-  }, [])
-
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
@@ -147,6 +137,10 @@ export default function QuotePage() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
     }
+  }
+
+  const handleInputChange = (field: keyof FormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   const isStepValid = () => {
@@ -167,8 +161,7 @@ export default function QuotePage() {
     alert('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
   }
 
-  // Step Components with stable structure
-  const StepOne = () => (
+  const renderStep1 = () => (
     <div className="space-y-10">
       {/* Quote Type Selection */}
       <div>
@@ -177,7 +170,7 @@ export default function QuotePage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div 
-            onClick={() => handleFormUpdate({ quoteType: 'product' })}
+            onClick={() => handleInputChange('quoteType', 'product')}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'product' 
                 ? 'border-blue-500 bg-blue-50 shadow-md' 
@@ -197,7 +190,7 @@ export default function QuotePage() {
           </div>
 
           <div 
-            onClick={() => handleFormUpdate({ quoteType: 'solution' })}
+            onClick={() => handleInputChange('quoteType', 'solution')}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'solution' 
                 ? 'border-purple-500 bg-purple-50 shadow-md' 
@@ -221,16 +214,14 @@ export default function QuotePage() {
       {/* Category Selection */}
       {formData.quoteType && (
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Kategori Seçimi</h3>
-          <p className="text-gray-600 mb-6">Hangi alanda hizmet almak istiyorsunuz?</p>
-          
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Kategori Seçimi</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {categories.map((category) => {
               const IconComponent = category.icon
               return (
                 <div
                   key={category.id}
-                  onClick={() => handleFormUpdate({ category: category.id })}
+                  onClick={() => handleInputChange('category', category.id)}
                   className={`group cursor-pointer rounded-xl border-2 p-5 transition-all duration-300 hover:shadow-lg ${
                     formData.category === category.id
                       ? 'border-blue-500 bg-blue-50 shadow-md'
@@ -245,7 +236,7 @@ export default function QuotePage() {
                       <CheckCircleIcon className="w-6 h-6 text-blue-600" />
                     )}
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">{category.name}</h4>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{category.name}</h3>
                   <p className="text-sm text-gray-600">{category.description}</p>
                 </div>
               )
@@ -257,16 +248,16 @@ export default function QuotePage() {
       {/* Subcategory Selection */}
       {formData.category && (
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Alt Kategori</h3>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Alt Kategori</h2>
           <div className="space-y-3">
             {categories.find(cat => cat.id === formData.category)?.subcategories.map((sub) => (
-              <label key={sub} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <label key={sub} className="flex items-center space-x-3 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors">
                 <input
                   type="radio"
                   name="subcategory"
                   value={sub}
                   checked={formData.subcategory === sub}
-                  onChange={(e) => handleFormUpdate({ subcategory: e.target.value })}
+                  onChange={(e) => handleInputChange('subcategory', e.target.value)}
                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">{sub}</span>
@@ -278,10 +269,10 @@ export default function QuotePage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Özel Gereksinimler (Opsiyonel)</label>
             <textarea
               value={formData.customRequirement}
-              onChange={(e) => handleFormUpdate({ customRequirement: e.target.value })}
+              onChange={(e) => handleInputChange('customRequirement', e.target.value)}
               placeholder="Özel gereksinimlerinizi, teknik detayları veya merak ettiklerinizi yazın..."
               className="w-full h-28 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              rows={3}
+              rows={4}
             />
           </div>
         </div>
@@ -289,7 +280,7 @@ export default function QuotePage() {
     </div>
   )
 
-  const StepTwo = () => (
+  const renderStep2 = () => (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-3">Proje Detayları</h2>
@@ -305,7 +296,7 @@ export default function QuotePage() {
             </label>
             <textarea
               value={formData.projectDetails}
-              onChange={(e) => handleFormUpdate({ projectDetails: e.target.value })}
+              onChange={(e) => handleInputChange('projectDetails', e.target.value)}
               placeholder="Projenizi detaylı olarak açıklayın. Hangi analizler yapacaksınız, nasıl bir laboratuvar kuruyorsunuz, hangi sektörde çalışıyorsunuz..."
               className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={4}
@@ -331,8 +322,8 @@ export default function QuotePage() {
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                 className="hidden"
                 onChange={(e) => {
-                  if (e.target.files) {
-                    handleFormUpdate({ files: Array.from(e.target.files) })
+                  if (e.target.files && e.target.files.length > 0) {
+                    handleInputChange('files', Array.from(e.target.files))
                   }
                 }}
               />
@@ -365,7 +356,7 @@ export default function QuotePage() {
                     name="budget"
                     value={range}
                     checked={formData.budget === range}
-                    onChange={(e) => handleFormUpdate({ budget: e.target.value })}
+                    onChange={(e) => handleInputChange('budget', e.target.value)}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{range}</span>
@@ -387,7 +378,7 @@ export default function QuotePage() {
                     name="timeline"
                     value={timeline}
                     checked={formData.timeline === timeline}
-                    onChange={(e) => handleFormUpdate({ timeline: e.target.value })}
+                    onChange={(e) => handleInputChange('timeline', e.target.value)}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{timeline}</span>
@@ -400,7 +391,7 @@ export default function QuotePage() {
     </div>
   )
 
-  const StepThree = () => (
+  const renderStep3 = () => (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-3">İletişim Bilgileri</h2>
@@ -414,7 +405,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.companyName}
-              onChange={(e) => handleFormUpdate({ companyName: e.target.value })}
+              onChange={(e) => handleInputChange('companyName', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Şirket adınızı girin"
               required
@@ -426,7 +417,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.contactPerson}
-              onChange={(e) => handleFormUpdate({ contactPerson: e.target.value })}
+              onChange={(e) => handleInputChange('contactPerson', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Adınız ve soyadınız"
               required
@@ -438,7 +429,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.position}
-              onChange={(e) => handleFormUpdate({ position: e.target.value })}
+              onChange={(e) => handleInputChange('position', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Pozisyonunuz veya ünvanınız"
             />
@@ -451,7 +442,7 @@ export default function QuotePage() {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => handleFormUpdate({ email: e.target.value })}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="email@example.com"
               required
@@ -463,7 +454,7 @@ export default function QuotePage() {
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => handleFormUpdate({ phone: e.target.value })}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="+90 xxx xxx xx xx"
               required
@@ -489,34 +480,36 @@ export default function QuotePage() {
     </div>
   )
 
-  const steps = useMemo(() => [
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return renderStep1()
+      case 2:
+        return renderStep2()
+      case 3:
+        return renderStep3()
+      default:
+        return renderStep1()
+    }
+  }
+
+  const steps = [
     {
       id: 1,
       title: 'İhtiyaç Tespiti',
-      description: 'Teklif türü ve kategori',
-      component: StepOne
+      description: 'Teklif türü ve kategori'
     },
     {
       id: 2,
       title: 'Proje Detayları',
-      description: 'Bütçe ve zaman planı',
-      component: StepTwo
+      description: 'Bütçe ve zaman planı'
     },
     {
       id: 3,
       title: 'İletişim Bilgileri',
-      description: 'İletişim ve gönderim',
-      component: StepThree
+      description: 'İletişim ve gönderim'
     }
-  ], [StepOne, StepTwo, StepThree])
-
-  const renderCurrentStep = () => {
-    const currentStepData = steps.find(step => step.id === currentStep)
-    if (!currentStepData) return null
-    
-    const StepComponent = currentStepData.component
-    return <StepComponent />
-  }
+  ]
 
   return (
     <>
@@ -622,7 +615,7 @@ export default function QuotePage() {
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  <StarIcon className="w-5 h-5" />
+                  <CheckIcon className="w-5 h-5" />
                   <span>Teklif Gönder</span>
                 </button>
               )}
