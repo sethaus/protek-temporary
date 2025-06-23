@@ -315,7 +315,7 @@ export default function QuotePage() {
                 aria-label="Dosya Seçin"
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFormData(prev => ({ ...prev, files: Array.from(e.target.files) }))
+                    setFormData(prev => ({ ...prev, files: Array.from(e.target.files!) }))
                   }
                 }}
               />
