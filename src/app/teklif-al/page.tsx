@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Header from '@/components/layout/Header'
 import { 
   CheckIcon, 
@@ -132,6 +132,15 @@ export default function QuotePage() {
 
   const totalSteps = 3
 
+  // Optimized form update function to prevent unnecessary re-renders
+  const updateFormData = useCallback((field: keyof FormData, value: any) => {
+    setFormData(prev => {
+      // Eğer değer değişmemişse state güncellemesi yapma
+      if (prev[field] === value) return prev
+      return { ...prev, [field]: value }
+    })
+  }, [])
+
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
@@ -154,7 +163,7 @@ export default function QuotePage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div 
-            onClick={() => setFormData(prev => ({ ...prev, quoteType: 'product' }))}
+            onClick={() => updateFormData('quoteType', 'product')}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'product' 
                 ? 'border-blue-500 bg-blue-50 shadow-md' 
@@ -174,7 +183,7 @@ export default function QuotePage() {
           </div>
 
           <div 
-            onClick={() => setFormData(prev => ({ ...prev, quoteType: 'solution' }))}
+            onClick={() => updateFormData('quoteType', 'solution')}
             className={`group cursor-pointer rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
               formData.quoteType === 'solution' 
                 ? 'border-purple-500 bg-purple-50 shadow-md' 
@@ -209,7 +218,7 @@ export default function QuotePage() {
               return (
                 <div
                   key={category.id}
-                  onClick={() => setFormData(prev => ({ ...prev, category: category.id }))}
+                  onClick={() => updateFormData('category', category.id)}
                   className={`group cursor-pointer rounded-xl border-2 p-5 transition-all duration-300 hover:shadow-lg ${
                     formData.category === category.id
                       ? 'border-blue-500 bg-blue-50 shadow-md'
@@ -238,7 +247,7 @@ export default function QuotePage() {
                               name="subcategory"
                               value={sub}
                               checked={formData.subcategory === sub}
-                              onChange={(e) => setFormData(prev => ({ ...prev, subcategory: e.target.value }))}
+                              onChange={(e) => updateFormData('subcategory', e.target.value)}
                               className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                             />
                             <span className="text-sm text-gray-700">{sub}</span>
@@ -260,7 +269,7 @@ export default function QuotePage() {
           <label className="text-xl font-semibold text-gray-900 mb-3 block">Özel İhtiyaçlarınız</label>
           <textarea
             value={formData.customRequirement || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, customRequirement: e.target.value }))}
+                          onChange={(e) => updateFormData('customRequirement', e.target.value)}
             placeholder="Özel gereksinimlerinizi, teknik detayları veya merak ettiklerinizi yazın..."
             className="w-full h-28 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             rows={3}
@@ -285,9 +294,9 @@ export default function QuotePage() {
               <DocumentTextIcon className="w-5 h-5" />
               <span>Proje Tanımı</span>
             </label>
-            <textarea
+                          <textarea
               value={formData.projectDetails || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, projectDetails: e.target.value }))}
+              onChange={(e) => updateFormData('projectDetails', e.target.value)}
               placeholder="Projenizi detaylı olarak açıklayın. Hangi analizler yapacaksınız, nasıl bir laboratuvar kuruyorsunuz, hangi sektörde çalışıyorsunuz..."
               className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={4}
@@ -315,7 +324,7 @@ export default function QuotePage() {
                 aria-label="Dosya Seçin"
                 onChange={(e) => {
                   if (e.target.files) {
-                    setFormData(prev => ({ ...prev, files: Array.from(e.target.files!) }))
+                    updateFormData('files', Array.from(e.target.files!))
                   }
                 }}
               />
@@ -348,7 +357,7 @@ export default function QuotePage() {
                     name="budget"
                     value={range}
                     checked={formData.budget === range}
-                    onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+                    onChange={(e) => updateFormData('budget', e.target.value)}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{range}</span>
@@ -370,7 +379,7 @@ export default function QuotePage() {
                     name="timeline"
                     value={timeline}
                     checked={formData.timeline === timeline}
-                    onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
+                    onChange={(e) => updateFormData('timeline', e.target.value)}
                     className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">{timeline}</span>
@@ -398,7 +407,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.companyName || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+              onChange={(e) => updateFormData('companyName', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Şirket adınızı girin"
               required
@@ -410,7 +419,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.contactPerson || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
+              onChange={(e) => updateFormData('contactPerson', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Adınız ve soyadınız"
               required
@@ -422,7 +431,7 @@ export default function QuotePage() {
             <input
               type="text"
               value={formData.position || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
+              onChange={(e) => updateFormData('position', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Pozisyonunuz veya ünvanınız"
             />
@@ -435,7 +444,7 @@ export default function QuotePage() {
             <input
               type="email"
               value={formData.email || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              onChange={(e) => updateFormData('email', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="email@example.com"
               required
@@ -447,7 +456,7 @@ export default function QuotePage() {
             <input
               type="tel"
               value={formData.phone || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              onChange={(e) => updateFormData('phone', e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="+90 xxx xxx xx xx"
               required
