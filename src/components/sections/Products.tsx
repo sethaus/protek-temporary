@@ -1,12 +1,11 @@
 'use client'
 
 import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { BeakerIcon, CubeIcon, WrenchIcon, ArrowRightIcon, FlagIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
-import { productCategories, getAllProducts } from '@/data/products'
+import { productCategories, type Product } from '@/data/products'
 
 const categoryList = [
   { label: 'Tümü', key: 'all' },
@@ -15,7 +14,31 @@ const categoryList = [
 
 // Helper function to generate product URL
 const generateProductUrl = (product: any) => {
-  // Find category and subcategory keys from the product data structure
+  // API'den gelen ürünler için category ve subcategory name'den key'e çevirme
+  const findCategoryKey = (categoryName: string) => {
+    const category = productCategories.find(cat => cat.name === categoryName)
+    return category ? category.key : 'laboratuvar-ekipmanlari' // fallback
+  }
+  
+  const findSubcategoryKey = (categoryName: string, subcategoryName: string) => {
+    const category = productCategories.find(cat => cat.name === categoryName)
+    if (category) {
+      const subcategory = category.subcategories.find(sub => sub.name === subcategoryName)
+      if (subcategory) {
+        return subcategory.key
+      }
+    }
+    
+    // Fallback: subcategory name'den key oluştur
+    return subcategoryName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/,/g, '')
+      .replace(/\s+/g, '-') || 'test-sistemleri'
+  }
+  
+  // Eğer statik ürünse, mevcut mantığı kullan
   for (const category of productCategories) {
     for (const subcategory of category.subcategories) {
       if (subcategory.products.some(p => p.id === product.id)) {
@@ -23,31 +46,66 @@ const generateProductUrl = (product: any) => {
       }
     }
   }
-  // Fallback - should not happen if data is consistent
-  return `/urunler/product-not-found`
+  
+  // API'den gelen dinamik ürünler için
+  if (product.category && product.subcategory) {
+    const categoryKey = findCategoryKey(product.category)
+    const subcategoryKey = findSubcategoryKey(product.category, product.subcategory)
+    return `/urunler/${categoryKey}/${subcategoryKey}/${product.id}`
+  }
+  
+  // Son fallback
+  return `/urunler/laboratuvar-ekipmanlari/test-sistemleri/${product.id}`
 }
 
 export default function Products() {
   const [selected, setSelected] = useState('all')
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      
+      if (data.success && Array.isArray(data.data)) {
+        setProducts(data.data)
+      } else {
+        console.error('Failed to fetch products:', data)
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
 
   // Alt kategori listesi
   const subcategories = selected === 'all'
     ? []
     : productCategories.find(cat => cat.key === selected)?.subcategories || []
 
-  // Seçili ürünler
-  let filteredProducts = [] as any[]
+  // Seçili ürünler - API'den gelen ürünleri filtrele
+  let filteredProducts = [] as Product[]
   if (selected === 'all') {
-    filteredProducts = getAllProducts()
+    filteredProducts = products
   } else if (selectedSub) {
-    const cat = productCategories.find(cat => cat.key === selected)
-    const sub = cat?.subcategories.find(sub => sub.key === selectedSub)
-    filteredProducts = sub ? sub.products : []
+    filteredProducts = products.filter(product => 
+      product.category === productCategories.find(cat => cat.key === selected)?.name &&
+      product.subcategory === productCategories.find(cat => cat.key === selected)?.subcategories.find(sub => sub.key === selectedSub)?.name
+    )
   } else {
-    const cat = productCategories.find(cat => cat.key === selected)
-    filteredProducts = cat ? cat.subcategories.flatMap(sub => sub.products) : []
+    filteredProducts = products.filter(product => 
+      product.category === productCategories.find(cat => cat.key === selected)?.name
+    )
   }
 
   // Yatay scroll fonksiyonları
@@ -59,6 +117,24 @@ export default function Products() {
       left: dir === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
       behavior: 'smooth',
     })
+  }
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="text-center space-y-4 mb-8">
+            <h2 className="text-gradient">Ürünlerimiz</h2>
+            <p className="text-body-lg text-neutral-600 max-w-3xl mx-auto">
+              Ürünler yükleniyor...
+            </p>
+          </div>
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -171,7 +247,7 @@ export default function Products() {
                       Özellikler
                     </h6>
                     <div className="flex flex-wrap gap-1">
-                      {product.features.slice(0, 3).map((feature: string, index: number) => (
+                      {product.features?.slice(0, 3).map((feature: string, index: number) => (
                         <span
                           key={index}
                           className="px-2 py-1 bg-primary-50 text-primary-700 text-caption rounded-md border border-primary-100"
@@ -179,7 +255,7 @@ export default function Products() {
                           {feature}
                         </span>
                       ))}
-                      {product.features.length > 3 && (
+                      {product.features && product.features.length > 3 && (
                         <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-caption rounded-md">
                           +{product.features.length - 3} daha
                         </span>
@@ -194,7 +270,7 @@ export default function Products() {
                       Uygulama Alanları
                     </h6>
                     <div className="flex flex-wrap gap-1">
-                      {product.applications.slice(0, 2).map((app: string, index: number) => (
+                      {product.applications?.slice(0, 2).map((app: string, index: number) => (
                         <span
                           key={index}
                           className="px-2 py-1 bg-secondary-50 text-secondary-700 text-caption rounded-md border border-secondary-100"
@@ -202,7 +278,7 @@ export default function Products() {
                           {app}
                         </span>
                       ))}
-                      {product.applications.length > 2 && (
+                      {product.applications && product.applications.length > 2 && (
                         <span className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded-md">
                           +{product.applications.length - 2} alan
                         </span>

@@ -13,7 +13,6 @@ import {
   HeartIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline'
-import { newsData } from '@/data/news-events'
 import { useState, useEffect } from 'react'
 
 interface PageProps {
@@ -24,17 +23,59 @@ interface PageProps {
 
 export default function HaberDetayPage({ params }: PageProps) {
   const router = useRouter()
-  const [news, setNews] = useState(newsData.find(n => n.id === params.id))
-  const [relatedNews, setRelatedNews] = useState(newsData.filter(n => n.id !== params.id && n.category === news?.category).slice(0, 3))
+  const [news, setNews] = useState<any | null>(null)
+  const [relatedNews, setRelatedNews] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const foundNews = newsData.find(n => n.id === params.id)
-    if (!foundNews) {
-      notFound()
+    const fetchNews = async () => {
+      try {
+        // Tek haber çek
+        const newsResponse = await fetch(`/api/news/${params.id}`)
+        const newsResult = await newsResponse.json()
+        
+        if (newsResult.success) {
+          setNews(newsResult.data)
+          
+          // Tüm haberleri çek ve ilgili haberleri filtrele
+          const allNewsResponse = await fetch('/api/news')
+          const allNewsResult = await allNewsResponse.json()
+          
+          if (allNewsResult.success) {
+            const allNews = allNewsResult.data
+            const related = allNews.filter((n: any) => 
+              n.id !== params.id && n.category === newsResult.data.category
+            ).slice(0, 3)
+            setRelatedNews(related)
+          }
+        } else {
+          notFound()
+        }
+      } catch (error) {
+        console.error('Haber yükleme hatası:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
     }
-    setNews(foundNews)
-    setRelatedNews(newsData.filter(n => n.id !== params.id && n.category === foundNews?.category).slice(0, 3))
+    
+    fetchNews()
   }, [params.id])
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="pt-20 min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Haber yükleniyor...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    )
+  }
 
   if (!news) {
     notFound()

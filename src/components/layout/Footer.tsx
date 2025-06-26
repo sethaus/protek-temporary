@@ -268,8 +268,18 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-slate-800 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-            <div className="text-slate-400 text-xs">
-              © 2025 Protek Analitik. Tüm hakları saklıdır.
+            <div className="flex items-center gap-4">
+              <div className="text-slate-400 text-xs">
+                © 2025 Protek Analitik. Tüm hakları saklıdır.
+              </div>
+              {/* CMS Panel Erişimi */}
+              <Link
+                href="/admin"
+                className="text-slate-500 hover:text-slate-300 text-xs transition-colors opacity-50 hover:opacity-100"
+                title="CMS Panel Erişimi"
+              >
+                🔧 Admin
+              </Link>
             </div>
             <div className="flex flex-wrap gap-4 text-xs">
               <Link href="/gizlilik-politikasi" className="text-slate-400 hover:text-white transition-colors">

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { 
@@ -11,29 +11,18 @@ import {
   BeakerIcon, 
   CubeIcon, 
   WrenchIcon, 
-  FlagIcon,
-  StarIcon,
   ShareIcon,
   DocumentTextIcon,
   ChatBubbleLeftIcon,
   PhoneIcon,
   CheckCircleIcon,
-  ArrowsPointingOutIcon,
-  PlayIcon,
-  ScaleIcon,
-  EyeIcon,
   ArrowDownTrayIcon,
   CalendarIcon,
   TruckIcon,
   ShieldCheckIcon,
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
-import { 
-  FlagIcon as FlagIconSolid, 
-  StarIcon as StarIconSolid,
-  PlayIcon as PlayIconSolid 
-} from '@heroicons/react/24/solid'
-import { productCategories, getProductById } from '@/data/products'
+import { productCategories, type Product } from '@/data/products'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -52,19 +41,66 @@ interface ProductPageProps {
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'specifications' | 'applications' | 'reviews' | 'support'>('overview')
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'specifications' | 'applications' | 'support'>('overview')
   const [selectedImage, setSelectedImage] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [showVideo, setShowVideo] = useState(false)
-  const [comparisonList, setComparisonList] = useState<string[]>([])
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
   })
 
-  // Ürünü bul
-  const product = getProductById(params.product)
+  // Fetch product from API
+  const fetchProduct = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      
+      if (data.success && Array.isArray(data.data)) {
+        const foundProduct = data.data.find((p: Product) => p.id === params.product)
+        if (foundProduct) {
+          setProduct(foundProduct)
+          
+          // Get related products (same category and subcategory)
+          const related = data.data.filter((p: Product) => 
+            p.category === foundProduct.category && 
+            p.subcategory === foundProduct.subcategory && 
+            p.id !== foundProduct.id
+          ).slice(0, 4)
+          setRelatedProducts(related)
+        }
+      } else {
+        console.error('Failed to fetch products:', data)
+      }
+    } catch (error) {
+      console.error('Error fetching product:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProduct()
+  }, [params.product])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-50">
+        <Header />
+        <main className="pt-20">
+          <div className="flex justify-center items-center h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Ürün yükleniyor...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
   
   if (!product) {
     notFound()
@@ -78,29 +114,14 @@ export default function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  // Benzer ürünleri bul (aynı alt kategorideki diğer ürünler)
-  const relatedProducts = subcategory.products
-    .filter(p => p.id !== product.id)
-    .slice(0, 4)
-
   const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BeakerIcon
 
-  // Demo resimler ve video (gerçek uygulamada product.media array'i olurdu)
-  const productImages = [
-    product.image,
-    '/images/lab-1.jpg',
-    '/images/lab-2.jpg',
-    '/images/lab-3.jpg',
-    '/images/lab-4.jpg'
-  ]
-
-  const toggleComparison = (productId: string) => {
-    setComparisonList(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    )
-  }
+  // Sadece yüklenen görselleri göster
+  const productImages = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : product.image
+      ? [product.image]
+      : []
 
   const shareProduct = async () => {
     if (navigator.share) {
@@ -119,28 +140,6 @@ export default function ProductPage({ params }: ProductPageProps) {
       // Show toast notification
     }
   }
-
-  // Mock customer reviews
-  const customerReviews = [
-    {
-      id: 1,
-      name: 'Dr. Mehmet Yılmaz',
-      company: 'İstanbul Üniversitesi',
-      rating: 5,
-      date: '2024-01-15',
-      comment: 'Çok hassas ölçümler yapabiliyor. Laboratuvarımızda sorunsuz çalışıyor.',
-      verified: true
-    },
-    {
-      id: 2,
-      name: 'Ayşe Kılıç',
-      company: 'Gıda Kontrol Lab.',
-      rating: 4,
-      date: '2024-01-10',
-      comment: 'Kullanımı kolay, sonuçları güvenilir. Fiyat-performans açısından çok iyi.',
-      verified: true
-    }
-  ]
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -186,52 +185,12 @@ export default function ProductPage({ params }: ProductPageProps) {
               {/* Enhanced Product Images Gallery */}
               <div className="space-y-4">
                 <div className="relative">
-                  <div className="relative aspect-square bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl overflow-hidden group">
+                  <div className="relative aspect-square bg-gradient-to-br from-primary-50 to-secondary-50 rounded-xl overflow-hidden">
                     <img
                       src={productImages[selectedImage]}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover"
                     />
-                    
-                    {/* Image Overlay Controls */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors">
-                      <div className="absolute top-4 right-4 flex gap-2">
-                        <button
-                          onClick={() => setIsFavorite(!isFavorite)}
-                          className="p-3 bg-white/90 hover:bg-white rounded-full transition-colors shadow-lg"
-                        >
-                          {isFavorite ? (
-                                                          <FlagIconSolid className="w-6 h-6 text-primary-500" />
-                          ) : (
-                            <FlagIcon className="w-6 h-6 text-neutral-600" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setIsFullscreen(true)}
-                          className="p-3 bg-white/90 hover:bg-white rounded-full transition-colors shadow-lg"
-                        >
-                          <ArrowsPointingOutIcon className="w-6 h-6 text-neutral-600" />
-                        </button>
-                      </div>
-                      
-                      {/* Video Play Button */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => setShowVideo(true)}
-                          className="p-4 bg-primary-600 hover:bg-primary-700 rounded-full text-white shadow-xl transition-colors"
-                        >
-                          <PlayIconSolid className="w-8 h-8 ml-1" />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* 360° View Badge */}
-                    <div className="absolute bottom-4 left-4">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-white/90 rounded-lg shadow-lg">
-                        <EyeIcon className="w-4 h-4 text-primary-600" />
-                        <span className="text-sm font-medium text-neutral-800">360° Görünüm</span>
-                      </div>
-                    </div>
                   </div>
                   
                   {/* Thumbnail Navigation */}
@@ -251,11 +210,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                           alt={`${product.name} ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
-                        {index === 0 && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                            <PlayIcon className="w-6 h-6 text-white" />
-                          </div>
-                        )}
                       </button>
                     ))}
                   </div>
@@ -285,17 +239,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                       >
                         <ShareIcon className="w-5 h-5" />
                       </button>
-                      <button
-                        onClick={() => toggleComparison(product.id)}
-                        className={`p-2 transition-colors ${
-                          comparisonList.includes(product.id)
-                            ? 'text-primary-600'
-                            : 'text-neutral-600 hover:text-primary-600'
-                        }`}
-                        title="Karşılaştırmaya Ekle"
-                      >
-                        <ScaleIcon className="w-5 h-5" />
-                      </button>
                     </div>
                   </div>
                   
@@ -303,16 +246,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {product.description}
                   </p>
 
-                  {/* Enhanced Rating & Trust Indicators */}
+                  {/* Trust Indicators */}
                   <div className="flex items-center gap-6 mb-6">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <StarIconSolid key={star} className="w-5 h-5 text-yellow-400" />
-                        ))}
-                      </div>
-                      <span className="text-sm text-neutral-600">(24 değerlendirme)</span>
-                    </div>
                     <div className="flex items-center gap-2 text-sm text-green-600">
                       <ShieldCheckIcon className="w-4 h-4" />
                       <span>Garantili Ürün</span>
@@ -325,7 +260,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
                   {/* Quick Features Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                    {product.features.slice(0, 6).map((feature, index) => (
+                    {product.features?.slice(0, 6).map((feature, index) => (
                       <div key={index} className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg">
                         <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
                         <span className="text-sm text-neutral-700">{feature}</span>
@@ -338,14 +273,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Link 
-                      href="/iletisim"
+                      href="/teklif-al"
                       className="bg-primary-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                     >
                       <ChatBubbleLeftIcon className="w-5 h-5" />
                       Fiyat Teklifi Al
                     </Link>
                     <Link 
-                      href="/iletisim"
+                      href="/iletisim#satis-ekibi"
                       className="border-2 border-primary-600 text-primary-600 px-6 py-4 rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-lg transform hover:-translate-y-1"
                     >
                       <PhoneIcon className="w-5 h-5" />
@@ -363,10 +298,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                       <CalendarIcon className="w-4 h-4" />
                       Demo Talep Et
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-neutral-600 hover:text-primary-600 transition-colors bg-white rounded-lg border border-neutral-200 hover:border-primary-200">
+                    <Link 
+                      href="/iletisim#canli-destek"
+                      className="flex items-center gap-2 px-4 py-2 text-neutral-600 hover:text-primary-600 transition-colors bg-white rounded-lg border border-neutral-200 hover:border-primary-200"
+                    >
                       <ChatBubbleLeftEllipsisIcon className="w-4 h-4" />
                       Canlı Destek
-                    </button>
+                    </Link>
                   </div>
                 </div>
 
@@ -394,7 +332,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                 { key: 'overview' as const, label: 'Genel Bakış', icon: BeakerIcon },
                 { key: 'specifications' as const, label: 'Teknik Özellikler', icon: DocumentTextIcon },
                 { key: 'applications' as const, label: 'Uygulama Alanları', icon: CubeIcon },
-                { key: 'reviews' as const, label: 'Müşteri Yorumları', icon: StarIcon },
                 { key: 'support' as const, label: 'Destek', icon: ChatBubbleLeftIcon },
               ].map((tab) => (
                 <button
@@ -424,17 +361,25 @@ export default function ProductPage({ params }: ProductPageProps) {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
                       <h3 className="text-2xl font-bold text-neutral-800 mb-4">Ürün Genel Bakış</h3>
+                      {product.overview ? (
+                        <div className="prose prose-neutral max-w-none">
+                          <p className="text-neutral-700 leading-relaxed mb-6 whitespace-pre-line">
+                            {product.overview}
+                          </p>
+                        </div>
+                      ) : (
                       <p className="text-neutral-700 leading-relaxed mb-6">
-                        {product.description} Bu ürün, {product.applications.join(', ').toLowerCase()} alanlarında 
-                        kullanılmak üzere tasarlanmıştır ve {product.features.join(', ').toLowerCase()} 
+                          {product.description} Bu ürün, {product.applications?.join(', ').toLowerCase()} alanlarında 
+                          kullanılmak üzere tasarlanmıştır ve {product.features?.join(', ').toLowerCase()} 
                         özelliklerini sunar.
                       </p>
+                      )}
                       
                       <div className="space-y-6">
                         <div>
                           <h4 className="text-xl font-semibold text-neutral-800 mb-4">Öne Çıkan Özellikler</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {product.features.map((feature, index) => (
+                            {product.features?.map((feature, index) => (
                               <div key={index} className="flex items-start gap-3 p-4 bg-neutral-50 rounded-lg">
                                 <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                 <span className="text-neutral-700">{feature}</span>
@@ -448,7 +393,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                     <div>
                       <h4 className="text-xl font-semibold text-neutral-800 mb-4">Uygulama Alanları</h4>
                       <div className="space-y-3">
-                        {product.applications.map((app, index) => (
+                        {product.applications?.map((app, index) => (
                           <div
                             key={index}
                             className="px-4 py-3 bg-primary-50 text-primary-700 rounded-lg border border-primary-200"
@@ -501,7 +446,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <div>
                   <h3 className="text-2xl font-bold text-neutral-800 mb-6">Uygulama Alanları ve Kullanım Senaryoları</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {product.applications.map((application, index) => (
+                    {product.applications?.map((application, index) => (
                       <motion.div 
                         key={index}
                         initial={{ opacity: 0, y: 30 }}
@@ -516,45 +461,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <p className="text-neutral-600 text-sm">
                           {product.name} ürünü {application.toLowerCase()} alanında yüksek performans sağlar.
                         </p>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'reviews' && (
-                <div>
-                  <h3 className="text-2xl font-bold text-neutral-800 mb-6">Müşteri Yorumları</h3>
-                  <div className="space-y-6">
-                    {customerReviews.map((review, index) => (
-                      <motion.div
-                        key={review.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.1 }}
-                        className="bg-white border border-neutral-200 rounded-xl p-6"
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h4 className="font-semibold text-neutral-800">{review.name}</h4>
-                            <p className="text-sm text-neutral-600">{review.company}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="flex items-center">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <StarIconSolid 
-                                    key={star} 
-                                    className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400' : 'text-neutral-300'}`} 
-                                  />
-                                ))}
-                              </div>
-                              {review.verified && (
-                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Doğrulanmış</span>
-                              )}
-                            </div>
-                          </div>
-                          <span className="text-sm text-neutral-500">{new Date(review.date).toLocaleDateString('tr-TR')}</span>
-                        </div>
-                        <p className="text-neutral-700">{review.comment}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -621,21 +527,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                             alt={relatedProduct.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          <div className="absolute top-2 right-2">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault()
-                                toggleComparison(relatedProduct.id)
-                              }}
-                              className={`p-2 rounded-full transition-colors ${
-                                comparisonList.includes(relatedProduct.id)
-                                  ? 'bg-primary-600 text-white'
-                                  : 'bg-white/80 text-neutral-600 hover:bg-white'
-                              }`}
-                            >
-                              <ScaleIcon className="w-4 h-4" />
-                            </button>
-                          </div>
                         </div>
                         <div className="p-4">
                           <h3 className="text-lg font-bold text-neutral-800 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
@@ -675,13 +566,13 @@ export default function ProductPage({ params }: ProductPageProps) {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/iletisim"
+                  href="/teklif-al"
                   className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-neutral-50 transition-colors shadow-lg hover:shadow-xl"
                 >
                   Fiyat Teklifi Al
                 </Link>
                 <Link
-                  href="/teknik-destek"
+                  href="/iletisim#satis-ekibi"
                   className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
                 >
                   Teknik Danışmanlık

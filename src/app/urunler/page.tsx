@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { BeakerIcon, CubeIcon, WrenchIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { productCategories, searchProducts, getAllProducts } from '@/data/products'
+import { productCategories, type Product } from '@/data/products'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -17,7 +17,31 @@ const iconMap = {
 
 // Helper function to generate product URL - same as in Products.tsx
 const generateProductUrl = (product: any) => {
-  // Find category and subcategory keys from the product data structure
+  // API'den gelen ürünler için category ve subcategory name'den key'e çevirme
+  const findCategoryKey = (categoryName: string) => {
+    const category = productCategories.find(cat => cat.name === categoryName)
+    return category ? category.key : 'laboratuvar-ekipmanlari' // fallback
+  }
+  
+  const findSubcategoryKey = (categoryName: string, subcategoryName: string) => {
+    const category = productCategories.find(cat => cat.name === categoryName)
+    if (category) {
+      const subcategory = category.subcategories.find(sub => sub.name === subcategoryName)
+      if (subcategory) {
+        return subcategory.key
+      }
+    }
+    
+    // Fallback: subcategory name'den key oluştur
+    return subcategoryName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/,/g, '')
+      .replace(/\s+/g, '-') || 'test-sistemleri'
+  }
+  
+  // Eğer statik ürünse, mevcut mantığı kullan
   for (const category of productCategories) {
     for (const subcategory of category.subcategories) {
       if (subcategory.products.some(p => p.id === product.id)) {
@@ -25,18 +49,87 @@ const generateProductUrl = (product: any) => {
       }
     }
   }
-  // Fallback - should not happen if data is consistent
-  return `/urunler/product-not-found`
+  
+  // API'den gelen dinamik ürünler için
+  if (product.category && product.subcategory) {
+    const categoryKey = findCategoryKey(product.category)
+    const subcategoryKey = findSubcategoryKey(product.category, product.subcategory)
+    return `/urunler/${categoryKey}/${subcategoryKey}/${product.id}`
+  }
+  
+  // Son fallback
+  return `/urunler/laboratuvar-ekipmanlari/test-sistemleri/${product.id}`
 }
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<Product[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
   })
+
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      
+      if (data.success && Array.isArray(data.data)) {
+        setProducts(data.data)
+      } else {
+        console.error('Failed to fetch products:', data)
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  // Search function using API data
+  const searchProducts = (query: string): Product[] => {
+    if (!query.trim()) return []
+    
+    const searchTerm = query.toLowerCase()
+    return products.filter(product => {
+      // Basic text fields
+      const basicMatch = 
+        product.name?.toLowerCase().includes(searchTerm) ||
+        product.description?.toLowerCase().includes(searchTerm) ||
+        product.category?.toLowerCase().includes(searchTerm) ||
+        product.subcategory?.toLowerCase().includes(searchTerm) ||
+        product.overview?.toLowerCase().includes(searchTerm)
+      
+      // Features array search
+      const featuresMatch = product.features?.some(feature => 
+        typeof feature === 'string' && feature.toLowerCase().includes(searchTerm)
+      )
+      
+      // Applications array search
+      const applicationsMatch = product.applications?.some(app => 
+        typeof app === 'string' && app.toLowerCase().includes(searchTerm)
+      )
+      
+      // Specifications object search
+      const specificationsMatch = product.specifications && 
+        typeof product.specifications === 'object' &&
+        Object.entries(product.specifications).some(([key, value]) => 
+          key.toLowerCase().includes(searchTerm) || 
+          (typeof value === 'string' && value.toLowerCase().includes(searchTerm))
+        )
+      
+      return basicMatch || featuresMatch || applicationsMatch || specificationsMatch
+    })
+  }
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -50,7 +143,27 @@ export default function ProductsPage() {
     }
   }
 
-  const allProducts = getAllProducts()
+  // Calculate category product counts from API data
+  const getCategoryProductCount = (categoryName: string): number => {
+    return products.filter(product => product.category === categoryName).length
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-50">
+        <Header />
+        <main className="pt-20">
+          <div className="flex justify-center items-center h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Ürünler yükleniyor...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -108,17 +221,21 @@ export default function ProductsPage() {
                       <div className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
                         <div className="flex items-start gap-4">
                           <img
-                            src={product.image}
-                            alt={product.name}
+                            src={product.image || '/images/placeholder.svg'}
+                            alt={product.name || 'Ürün'}
                             className="w-16 h-16 object-cover rounded-lg bg-neutral-100"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.src = '/images/placeholder.svg'
+                            }}
                           />
                           <div className="flex-1">
                             <h3 className="font-semibold text-neutral-800 group-hover:text-primary-600 transition-colors">
                               {product.name}
                             </h3>
-                            <p className="text-sm text-neutral-600 mt-1">{product.description}</p>
+                            <p className="text-sm text-neutral-600 mt-1">{product.description || 'Açıklama bulunmuyor'}</p>
                             <div className="text-xs text-neutral-500 mt-2">
-                              {product.category} • {product.subcategory}
+                              {product.category || 'Kategori yok'} • {product.subcategory || 'Alt kategori yok'}
                             </div>
                           </div>
                         </div>
@@ -149,14 +266,14 @@ export default function ProductsPage() {
                   Ürün Kategorilerimiz
                 </h2>
                 <p className="text-lg text-neutral-600 max-w-3xl mx-auto">
-                  {productCategories.length} ana kategoride {allProducts.length}+ ürün seçeneği
+                  {productCategories.length} ana kategoride {products.length}+ ürün seçeneği
                 </p>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {productCategories.map((category, index) => {
                   const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BeakerIcon
-                  const productCount = category.subcategories.reduce((total, sub) => total + sub.products.length, 0)
+                  const productCount = getCategoryProductCount(category.name)
                   
                   return (
                     <motion.div

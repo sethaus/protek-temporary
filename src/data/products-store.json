@@ -1,0 +1,63 @@
+{
+  "products": [
+    {
+      "name": "Digital Refraktometre DR-A1",
+      "description": "Brix ve refraktif indeks tayini için otomatik sıcaklık kompanzasyonlu dijital refraktometre",
+      "images": [
+        "/images/lab-1.jpg"
+      ],
+      "category": "Laboratuvar Ekipmanları, Sarf Malzemeler Ve Kitler",
+      "subcategory": "Fiziksel Analiz Ekipmanları",
+      "features": [
+        "Otomatik sıcaklık kompanzasyonu",
+        "Su geçirmez tasarım",
+        "Kolay kalibasyon"
+      ],
+      "applications": [
+        "Gıda endüstrisi",
+        "İçecek üretimi",
+        "Şeker analizi"
+      ],
+      "specifications": {
+        "Ölçüm Aralığı": "0-85% Brix",
+        "Hassasiyet": "±0.1% Brix",
+        "Sıcaklık Aralığı": "10-40°C"
+      },
+      "dataSheet": "",
+      "price": "",
+      "isWarrantied": false,
+      "hasFreeShipping": false,
+      "id": "brix-001",
+      "image": "/images/lab-1.jpg"
+    },
+    {
+      "name": "AquaLab 4TE Su Aktivite Ölçer",
+      "description": "Su aktivite tayini ve sorpsiyon-desorpsiyon analizi için yüksek hassasiyetli cihaz",
+      "images": [
+        "/images/lab-2.jpg"
+      ],
+      "category": "Laboratuvar Ekipmanları, Sarf Malzemeler Ve Kitler",
+      "subcategory": "Fiziksel Analiz Ekipmanları",
+      "features": [
+        "Hızlı ölçüm (5 dakika)",
+        "Yüksek hassasiyet",
+        "Otomatik kalibasyon"
+      ],
+      "applications": [
+        "Gıda güvenliği",
+        "Raf ömrü tayini",
+        "Mikrobiyolojik güvenlik"
+      ],
+      "specifications": {
+        "Ölçüm Aralığı": "0.000-1.000 aw",
+        "Hassasiyet": "±0.003 aw",
+        "Ölçüm Süresi": "5 dakika"
+      },
+      "dataSheet": "",
+      "price": "",
+      "id": "su-aktivite-001",
+      "image": "/images/lab-2.jpg"
+    }
+  ],
+  "lastUpdated": "2025-06-26T00:20:50.092Z"
+}

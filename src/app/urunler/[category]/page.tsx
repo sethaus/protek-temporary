@@ -1,11 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRightIcon, HomeIcon, BeakerIcon, CubeIcon, WrenchIcon, FlagIcon } from '@heroicons/react/24/outline'
-import { productCategories, getProductsByCategory } from '@/data/products'
+import { productCategories, type Product } from '@/data/products'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -23,6 +23,8 @@ interface CategoryPageProps {
 
 export default function CategoryPage({ params }: CategoryPageProps) {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
 
   // Kategoriyi bul
   const category = productCategories.find(cat => cat.key === params.category)
@@ -31,23 +33,99 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     notFound()
   }
 
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/products')
+      const data = await response.json()
+      
+      if (data.success && Array.isArray(data.data)) {
+        setProducts(data.data)
+      } else {
+        console.error('Failed to fetch products:', data)
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  // Filter products by category from API data
+  const categoryProducts = products.filter(product => product.category === category.name)
+
   // Helper function to get subcategory key for a product
   const getSubcategoryKeyForProduct = (productId: string): string => {
+    // Önce statik yapıda ara
     for (const subcategory of category.subcategories) {
       if (subcategory.products.some(p => p.id === productId)) {
         return subcategory.key
       }
     }
+    
+    // API'den gelen ürün için subcategory name'den key oluştur
+    const product = categoryProducts.find(p => p.id === productId)
+    if (product && product.subcategory) {
+      const subcategory = category.subcategories.find(sub => sub.name === product.subcategory)
+      if (subcategory) {
+        return subcategory.key
+      }
+      
+      // Fallback: name'den key oluştur
+      return product.subcategory
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/,/g, '')
+        .replace(/\s+/g, '-') || 'test-sistemleri'
+    }
+    
     return 'unknown'
+  }
+
+  // Generate product URL function
+  const generateProductUrl = (product: any) => {
+    const subcategoryKey = getSubcategoryKeyForProduct(product.id)
+    return `/urunler/${category.key}/${subcategoryKey}/${product.id}`
+  }
+
+  // Get subcategory counts from API data
+  const getSubcategoryProductCount = (subcategoryName: string): number => {
+    return categoryProducts.filter(product => product.subcategory === subcategoryName).length
   }
 
   // Seçili alt kategoriye göre ürünleri filtrele
   const filteredProducts = selectedSubcategory
-    ? category.subcategories.find(sub => sub.key === selectedSubcategory)?.products || []
-    : category.subcategories.flatMap(sub => sub.products)
+    ? categoryProducts.filter(product => {
+        const subcategory = category.subcategories.find(sub => sub.key === selectedSubcategory)
+        return subcategory && product.subcategory === subcategory.name
+      })
+    : categoryProducts
 
   const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BeakerIcon
-  const totalProducts = category.subcategories.reduce((total, sub) => total + sub.products.length, 0)
+  const totalProducts = categoryProducts.length
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-50">
+        <Header />
+        <main className="pt-20">
+          <div className="flex justify-center items-center h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Ürünler yükleniyor...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -125,7 +203,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                       : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                   }`}
                 >
-                  {subcategory.name} ({subcategory.products.length})
+                  {subcategory.name} ({getSubcategoryProductCount(subcategory.name)})
                 </button>
               ))}
             </div>
@@ -144,7 +222,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                   >
-                    <Link href={`/urunler/${category.key}/${getSubcategoryKeyForProduct(product.id)}/${product.id}`}>
+                    <Link href={generateProductUrl(product)}>
                       <div className="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
                         <div className="relative">
                           {/* Ürün Resmi */}
@@ -173,7 +251,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
                             {/* Özellikler */}
                             <div className="space-y-2 mb-4">
-                              {product.features.slice(0, 3).map((feature, idx) => (
+                              {product.features?.slice(0, 3).map((feature, idx) => (
                                 <div key={idx} className="flex items-center text-xs text-neutral-500">
                                   <div className="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2"></div>
                                   {feature}
@@ -183,7 +261,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
                             {/* Uygulama Alanları */}
                             <div className="flex flex-wrap gap-1 mb-4">
-                              {product.applications.slice(0, 3).map((app, idx) => (
+                              {product.applications?.slice(0, 3).map((app, idx) => (
                                 <span
                                   key={idx}
                                   className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded-full"

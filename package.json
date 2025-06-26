@@ -10,11 +10,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.18",
+    "@heroicons/react": "^2.1.1",
+    "@libsql/client": "^0.15.9",
+    "airtable": "^0.12.2",
+    "dotenv": "^16.5.0",
     "framer-motion": "^10.16.0",
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "next": "14.0.4",
+    "react": "^18",
+    "react-dom": "^18",
     "react-intersection-observer": "^9.5.0"
   },
   "devDependencies": {

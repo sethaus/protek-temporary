@@ -2,7 +2,9 @@ export interface Product {
   id: string
   name: string
   description: string
+  overview?: string  // Added field for general overview content
   image: string
+  images?: string[]  // Optional field for multiple images
   category: string
   subcategory: string
   features: string[]
@@ -10,6 +12,11 @@ export interface Product {
   specifications?: { [key: string]: string }
   dataSheet?: string
   price?: string
+  isWarrantied?: boolean
+  hasFreeShipping?: boolean
+  catalogFiles?: string[]
+  created_at: string
+  updated_at?: string  // Added field for last update timestamp
 }
 
 export interface Subcategory {
@@ -41,8 +48,11 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'brix-001',
+            created_at: '2023-01-01T00:00:00.000Z',
+            updated_at: '2023-12-15T10:30:00.000Z',
             name: 'Digital Refraktometre DR-A1',
             description: 'Brix ve refraktif indeks tayini için otomatik sıcaklık kompanzasyonlu dijital refraktometre',
+            overview: 'Digital Refraktometre DR-A1, gıda endüstrisi ve içecek üretiminde en yüksek hassasiyetle Brix ve refraktif indeks ölçümü yapan profesyonel bir laboratuvar cihazıdır.\n\nBu gelişmiş refraktometre, otomatik sıcaklık kompanzasyonu teknolojisi sayesinde çevresel sıcaklık değişimlerinden etkilenmeden doğru sonuçlar verir. Su geçirmez tasarımı ile zorlu laboratuvar koşullarında güvenle kullanılabilir.\n\nKolay kalibasyon özelliği ile hızlı kurulum sağlar ve rutin bakım gereksinimlerini minimize eder. Özellikle şeker analizi, meyve suyu kalite kontrolü ve gıda üretim süreçlerinde tercih edilen güvenilir bir çözümdür.',
             image: '/images/lab-1.jpg',
             category: 'Laboratuvar Ekipmanları, Sarf Malzemeler Ve Kitler',
             subcategory: 'Fiziksel Analiz Ekipmanları',
@@ -56,6 +66,8 @@ export const productCategories: Category[] = [
           },
           {
             id: 'su-aktivite-001',
+            created_at: '2023-01-02T00:00:00.000Z',
+            updated_at: '2024-01-10T14:20:00.000Z',
             name: 'AquaLab 4TE Su Aktivite Ölçer',
             description: 'Su aktivite tayini ve sorpsiyon-desorpsiyon analizi için yüksek hassasiyetli cihaz',
             image: '/images/lab-2.jpg',
@@ -71,6 +83,8 @@ export const productCategories: Category[] = [
           },
           {
             id: 'colorimeter-001',
+            created_at: '2023-01-03T00:00:00.000Z',
+            updated_at: '2023-11-28T09:15:00.000Z',
             name: 'Colorimeter CR-400',
             description: 'Organoleptik analizler için profesyonel renk ölçüm cihazı',
             image: '/images/lab-3.jpg',
@@ -86,6 +100,8 @@ export const productCategories: Category[] = [
           },
           {
             id: 'texture-001',
+            created_at: '2023-01-04T00:00:00.000Z',
+            updated_at: '2024-01-15T16:45:00.000Z',
             name: 'TA.XTplus Texture Analyser',
             description: 'Tekstürel yapı analizleri için gelişmiş doku analiz cihazı',
             image: '/images/lab-4.jpg',
@@ -101,6 +117,8 @@ export const productCategories: Category[] = [
           },
           {
             id: 'particle-001',
+            created_at: '2023-01-05T00:00:00.000Z',
+            updated_at: '2024-01-08T11:30:00.000Z',
             name: 'Mastersizer 3000 Particle Size Analyzer',
             description: 'Tane dağılım analizleri için lazer difraksiyon teknolojisi',
             image: '/images/lab-7.jpg',
@@ -116,6 +134,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'moisture-001',
+            created_at: '2023-01-06T00:00:00.000Z',
             name: 'MA37 Moisture Analyzer',
             description: 'Rutubet (nem) / kuru madde tayini için halojenlı kurutma sistemi',
             image: '/images/lab-10.jpg',
@@ -131,6 +150,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'ph-meter-001',
+            created_at: '2023-01-07T00:00:00.000Z',
             name: 'SevenExcellence pH/Ion Meter',
             description: 'pH tayini ve iyon selektif ölçümler için gelişmiş metre',
             image: '/images/lab-1.jpg',
@@ -146,6 +166,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'density-001',
+            created_at: '2023-01-08T00:00:00.000Z',
             name: 'DMA 35 Portable Density Meter',
             description: 'Yoğunluk tayini için taşınabilir dijital yoğunlukmetre',
             image: '/images/lab-2.jpg',
@@ -161,6 +182,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'karl-fischer-001',
+            created_at: '2023-01-09T00:00:00.000Z',
             name: 'C30S Karl Fischer Coulometer',
             description: 'Karl Fischer nem tayini için yüksek hassasiyetli coulometre',
             image: '/images/lab-3.jpg',
@@ -176,6 +198,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'viscometer-001',
+            created_at: '2023-01-10T00:00:00.000Z',
             name: 'DV2T Viscometer',
             description: 'Viskozite tayini ve reolojik akışkanlık karakteristiği analizi',
             image: '/images/lab-4.jpg',
@@ -198,6 +221,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'protein-001',
+            created_at: '2023-01-11T00:00:00.000Z',
             name: 'Kjeldahl Protein Analiz Sistemi K-439',
             description: 'Protein tayini için otomatik Kjeldahl distilasyon sistemi',
             image: '/images/lab-7.jpg',
@@ -213,6 +237,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'yag-001',
+            created_at: '2023-01-12T00:00:00.000Z',
             name: 'SoxROC Yağ Ekstraksiyon Sistemi',
             description: 'Yağ tayini için hızlı Soxhlet ekstraksiyon sistemi',
             image: '/images/lab-10.jpg',
@@ -228,6 +253,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'titrasyon-001',
+            created_at: '2023-01-13T00:00:00.000Z',
             name: 'Excellence T7 Titrator',
             description: 'Asitlik, peroksit değeri ve sabunlaşma değeri tayini için otomatik titratör',
             image: '/images/lab-1.jpg',
@@ -243,6 +269,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'fiber-001',
+            created_at: '2023-01-14T00:00:00.000Z',
             name: 'FIWE Raw Fiber Extractor',
             description: 'Ham selüloz, lignin ve diyet lif analizleri için ekstraksiyon sistemi',
             image: '/images/lab-2.jpg',
@@ -258,6 +285,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'salt-001',
+            created_at: '2023-01-15T00:00:00.000Z',
             name: 'Chloride Analyzer 926',
             description: 'Tuz tayini için otomatik klorür analiz cihazı',
             image: '/images/lab-3.jpg',
@@ -273,6 +301,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'sfc-001',
+            created_at: '2023-01-16T00:00:00.000Z',
             name: 'SFC Analyzer NMR-SFC',
             description: 'SFC / Katı yağ yüzdesi tayini için NMR teknolojisi',
             image: '/images/lab-4.jpg',
@@ -288,6 +317,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'heavy-metals-001',
+            created_at: '2023-01-17T00:00:00.000Z',
             name: 'AAS-240 Atomic Absorption Spectrometer',
             description: 'İz elementler ve ağır metal analizleri için atomik absorpsiyon spektrometresi',
             image: '/images/lab-7.jpg',
@@ -303,6 +333,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'so2-001',
+            created_at: '2023-01-18T00:00:00.000Z',
             name: 'SO2 Distillation Unit 323',
             description: 'Kükürt (SO2) tayini için distilasyon ünitesi',
             image: '/images/lab-10.jpg',
@@ -318,6 +349,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'nir-001',
+            created_at: '2023-01-19T00:00:00.000Z',
             name: 'DS2500 NIR Analyzer',
             description: 'NIR spektrofotometrik ölçüm metodu ile çok hassas ve hızlı analiz',
             image: '/images/lab-1.jpg',
@@ -340,6 +372,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'nutrient-agar-001',
+            created_at: '2023-01-20T00:00:00.000Z',
             name: 'Nutrient Agar Dehydrated Media',
             description: 'Genel amaçlı mikroorganizma kültürü için dehidrat besiyeri',
             image: '/images/lab-2.jpg',
@@ -355,6 +388,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'petrifilm-apc-001',
+            created_at: '2023-01-21T00:00:00.000Z',
             name: '3M Petrifilm Aerobic Count Plates',
             description: 'Toplam aerobik bakteri sayısı için kullanıma hazır analiz plakaları',
             image: '/images/lab-3.jpg',
@@ -370,6 +404,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'petrifilm-ecoli-001',
+            created_at: '2023-01-22T00:00:00.000Z',
             name: '3M Petrifilm E.coli/Coliform Count Plates',
             description: 'E.coli ve koliform bakterileri için özel analiz plakaları',
             image: '/images/lab-4.jpg',
@@ -385,6 +420,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'pathogen-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Neogen Listeria Right Now Test',
             description: 'Listeria patojen mikroorganizması için hızlı test sistemi',
             image: '/images/lab-7.jpg',
@@ -400,6 +436,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'hygiene-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'SystemSURE Plus ATP Hygiene System',
             description: 'Hijyen kontrol ve izleme sistemleri için ATP bioluminesans',
             image: '/images/lab-10.jpg',
@@ -415,6 +452,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'dilution-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'BagMixer 400 Stomacher',
             description: 'Kullanıma hazır dilüsyon çözeltileri ve homojenizasyon sistemi',
             image: '/images/lab-1.jpg',
@@ -430,6 +468,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'membrane-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Millipore Membrane Filtration System',
             description: 'Membran filtrasyon sistemleri ve analitik numune hazırlık',
             image: '/images/lab-2.jpg',
@@ -445,6 +484,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'uht-sterilite-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'BacT/ALERT 3D System',
             description: 'UHT ambalajlarda hızlı sterilite kontrol sistemleri',
             image: '/images/lab-3.jpg',
@@ -460,6 +500,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'air-quality-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'SAS Super ISO Microbial Air Sampler',
             description: 'Hava kalitesi ve ortamdan mikrobiyolojik kirlilik kontrol ürünleri',
             image: '/images/lab-4.jpg',
@@ -475,6 +516,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'media-prep-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'MediaPrep M25 Automated Media Dispenser',
             description: 'Otomatik besiyeri hazırlık ve steril dolum sistemleri',
             image: '/images/lab-7.jpg',
@@ -497,6 +539,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'gdo-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Real-Time PCR GDO Analiz Sistemi',
             description: 'GDO/Tağşiş analizleri için real-time PCR sistemi',
             image: '/images/lab-7.jpg',
@@ -519,6 +562,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'temp-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Testo 735-2 Precision Thermometer',
             description: 'Sıcaklık ölçüm cihazları - Yüksek hassasiyetli dijital termometre',
             image: '/images/lab-1.jpg',
@@ -534,6 +578,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'dewpoint-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'DewPoint Pro DP70',
             description: 'Çiğlenme noktası sıcaklığı ölçüm cihazları için taşınabilir sistem',
             image: '/images/lab-2.jpg',
@@ -549,6 +594,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'humidity-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'HygroLog HL-NT2 Data Logger',
             description: 'Bağıl nem ölçüm cihazları için hassas sensör teknolojisi',
             image: '/images/lab-3.jpg',
@@ -564,6 +610,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'absolute-humidity-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'ABS-H1 Absolute Humidity Meter',
             description: 'Mutlak nem ölçüm cihazları için gelişmiş sensör teknolojisi',
             image: '/images/lab-4.jpg',
@@ -579,6 +626,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'pressure-diff-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'DP-CALC 5825 Micromanometer',
             description: 'Fark basınç ölçüm cihazları için dijital mikromanometre',
             image: '/images/lab-7.jpg',
@@ -594,6 +642,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'pressure-abs-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'DPI 104 Digital Pressure Indicator',
             description: 'Mutlak basınç ölçüm cihazları için dijital gösterge',
             image: '/images/lab-10.jpg',
@@ -609,6 +658,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'velocity-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'TSI 9545 VelociCalc Air Velocity Meter',
             description: 'Hız ölçüm cihazları için çok fonksiyonlu hava hızı ölçer',
             image: '/images/lab-1.jpg',
@@ -624,6 +674,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'rpm-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'PCE-155 Digital Tachometer',
             description: 'Devir ölçüm cihazları için temassız dijital takometere',
             image: '/images/lab-2.jpg',
@@ -639,6 +690,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'flow-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'TSI 4040 Mass Flow Meter',
             description: 'Debi ölçüm cihazları için termal mass flow metre',
             image: '/images/lab-3.jpg',
@@ -654,6 +706,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'lux-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'LI-250A Light Meter',
             description: 'Lüx ve ışık şiddeti ölçüm cihazları için quantum sensör',
             image: '/images/lab-4.jpg',
@@ -669,6 +722,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'co2-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'TSI 7545 IAQ-CALC CO2 Monitor',
             description: 'Karbondioksit ölçüm cihazları için iç hava kalitesi monitörü',
             image: '/images/lab-7.jpg',
@@ -684,6 +738,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'co-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'BW GasAlert Extreme CO Monitor',
             description: 'Karbonmonoksit ölçüm cihazları için taşınabilir gaz dedektörü',
             image: '/images/lab-10.jpg',
@@ -706,6 +761,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'package-test-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Instron 3367 Universal Testing System',
             description: 'Ambalaj testleri için çekme, basma ve bükme test sistemi',
             image: '/images/lab-1.jpg',
@@ -721,6 +777,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'bottle-test-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'AGR TopLoad Tester TL-30',
             description: 'Gazlı/gazsız içeceklerde ve sıvı ürünlerde kalite kontrol ekipmanları',
             image: '/images/lab-2.jpg',
@@ -736,6 +793,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'can-test-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'CANNEED-CBT-1000 Can Testing System',
             description: 'PET/Preform ve metal kutu analiz cihazları için kapsamlı test sistemi',
             image: '/images/lab-3.jpg',
@@ -758,6 +816,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'shelf-life-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'VSP2 Vent Sizing Package',
             description: 'Raf ömrü analizi için gelişmiş termal analiz sistemi',
             image: '/images/lab-4.jpg',
@@ -773,6 +832,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'stability-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'CLIMACELL 222 Stability Chamber',
             description: 'Ürün stabilizasyon testleri için iklim test odası',
             image: '/images/lab-7.jpg',
@@ -802,7 +862,8 @@ export const productCategories: Category[] = [
         description: 'Üretim hattında gerçek zamanlı analiz sistemleri',
         products: [
           {
-            id: 'nir-001',
+            id: 'nir-ft-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'FT-NIR Spektrometre FN-500',
             description: 'NIR, FT-NIR ve NMR spektrofotometrik ölçüm metodu ile çok hassas analiz',
             image: '/images/lab-3.jpg',
@@ -818,6 +879,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'ph-redox-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'İnline pH/Redox Ölçer',
             description: 'pH/Redox ölçümü için hat tipi sensör sistemi',
             image: '/images/lab-4.jpg',
@@ -840,6 +902,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'seviye-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Ultrasonik Seviye Sensörü',
             description: 'Seviye sensörleri ve nokta seviye sensörleri',
             image: '/images/lab-7.jpg',
@@ -870,6 +933,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'homoj-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Pilot Homojenizatör PH-100',
             description: 'Laboratuvar tipi yüksek basınç homojenizatörü',
             image: '/images/lab-10.jpg',
@@ -892,6 +956,7 @@ export const productCategories: Category[] = [
         products: [
           {
             id: 'spray-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Mini Spray Dryer SD-05',
             description: 'Spray dryer / Fluid bed dryer / Kuruma ve kurutma sistemleri',
             image: '/images/lab-1.jpg',
@@ -907,6 +972,7 @@ export const productCategories: Category[] = [
           },
           {
             id: 'lyophilizer-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Laboratuvar Liyofilizatörü LF-10',
             description: 'Lyofilizasyon / Freeze drying (dondurarak kurutma) sistemi',
             image: '/images/lab-2.jpg',
@@ -928,7 +994,8 @@ export const productCategories: Category[] = [
         description: 'Filtrasyon, separasyon ve solid phase extraction sistemleri',
         products: [
           {
-            id: 'membrane-001',
+            id: 'membrane-mf-001',
+            created_at: '2023-01-01T00:00:00.000Z',
             name: 'Membran Filtrasyon Sistemi MF-200',
             description: 'Filtrasyon ve separasyon için membran teknolojisi',
             image: '/images/lab-3.jpg',
@@ -1016,4 +1083,15 @@ export const generateSubcategorySlug = (subcategoryName: string): string => {
     .replace(/[^a-z0-9]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
+}
+
+// Ürün resimlerini alma fonksiyonu
+export const getProductImages = (product: Product): string[] => {
+  if (product.images && Array.isArray(product.images)) {
+    return product.images
+  }
+  if (product.image) {
+    return [product.image]
+  }
+  return ['/images/lab-1.jpg'] // Default image
 } 

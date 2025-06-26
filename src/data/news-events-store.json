@@ -1,0 +1,111 @@
+{
+  "news": [
+    {
+      "title": "haber 1",
+      "summary": "haber özet",
+      "content": "içerik metni",
+      "category": "sirket-haberleri",
+      "publishDate": "2025-06-25",
+      "imageUrl": "/images/lab-1.jpg",
+      "tags": [
+        "adas",
+        "asdas",
+        "asdasdasdas"
+      ],
+      "featured": false,
+      "id": "haber-1-040"
+    },
+    {
+      "title": "deneme 2",
+      "summary": "deneme 2",
+      "content": "Yeni Ürün Serisi Özellikler\nHızlı Protein Analiz Sistemi (HPA-2024)\n**30 saniyede** protein analizi\n%99.8 doğruluk oranı\nOtomatik kalibrasyon özelliği\nKullanıcı dostu arayüz\nMikrobiyal Hızlı Test Kiti (MHT-Pro)\nE.coli, Salmonella, Listeria testi bir arada\n15 dakikada sonuç\nSahada kullanım imkanı\n500+ test kapasitesi\nSmart Lab Entegrasyon Sistemi\nIoT tabanlı veri toplama\nGerçek zamanlı raporlama\nMobil uygulama desteği\nBulut tabanlı veri saklama\nSektördeki Etkisi\nBu yeni ürün serisi ile laboratuvarlar:\n\nTest sürelerini %80 oranında kısaltabilecek\nİnsan hatası riskini minimize edecek\nMaliyet tasarrufu sağlayacak\nKalite güvencesini artıracak",
+      "category": "sektor-guncel",
+      "publishDate": "2025-06-25",
+      "imageUrl": "/uploads/products/1750878295815-duvar-6000x2800.jpg",
+      "tags": [
+        "et1",
+        "et2"
+      ],
+      "featured": true,
+      "id": "deneme-2-059"
+    },
+    {
+      "id": "new-laboratory-equipment-2024",
+      "title": "12121 Protek Analitik 2024 Yılında Yeni Laboratuvar Ekipmanları Serisi Tanıttı",
+      "summary": "Gıda analizi alanında çığır açacak yeni ürün serimiz ile laboratuvarlarınızın verimliliğini artırın.",
+      "content": "Protek Analitik olarak, 2024 yılının ilk çeyreğinde gıda analizi sektöründe devrim niteliğinde yeni ürünlerimizi tanıtmaktan büyük mutluluk duyuyoruz. ...",
+      "category": "sirket-haberleri",
+      "publishDate": "2024-03-15",
+      "imageUrl": "/images/lab-1.jpg",
+      "tags": [
+        "Yeni Ürün",
+        "Laboratuvar Ekipmanları",
+        "Gıda Analizi",
+        "Teknoloji"
+      ],
+      "featured": true
+    },
+    {
+      "id": "ai-analytics-trend-2024",
+      "title": "Yapay Zeka ve Analitik Sektörde 2024 Trendleri",
+      "summary": "Analitik laboratuvarlarda yapay zeka kullanımının arttığı 2024 yılında sektördeki gelişmeleri inceliyoruz.",
+      "content": "Analitik sektöründe yapay zeka kullanımı her geçen gün artarak devam ediyor. 2024 yılının ilk yarısında gözlemlenen trendleri ve gelecek öngörülerini sizler için derledik. ...",
+      "category": "sektor-guncel",
+      "publishDate": "2024-02-28",
+      "imageUrl": "/images/lab-2.jpg",
+      "tags": [
+        "Yapay Zeka",
+        "Teknoloji Trendleri",
+        "Analitik",
+        "İnovasyon"
+      ],
+      "featured": true
+    },
+    {
+      "id": "gida-fabrikasi-success-story",
+      "title": "Büyük Gıda Fabrikası Kalite Kontrol Sistemini %300 Verimli Hale Getirdi",
+      "summary": "Türkiye'nin önde gelen gıda üreticilerinden biri, Protek Analitik çözümleri ile kalite kontrol süreçlerini kökten değiştirdi.",
+      "content": "Türkiye'nin önde gelen gıda üreticilerinden Mega Food A.Ş., Protek Analitik'in sağladığı entegre laboratuvar çözümleri ile kalite kontrol süreçlerinde çarpıcı iyileştirmeler elde etti. ...",
+      "category": "basari-hikayeleri",
+      "publishDate": "2024-01-20",
+      "imageUrl": "/images/lab-3.jpg",
+      "tags": [
+        "Başarı Hikayesi",
+        "Gıda Sektörü",
+        "Verimlilik",
+        "Kalite Kontrol"
+      ],
+      "featured": false
+    },
+    {
+      "id": "iso-17025-accreditation",
+      "title": "Protek Analitik ISO/IEC 17025 Akreditasyonu Yeniledi",
+      "summary": "Laboratuvar test ve kalibrasyon standartlarında en üst seviye kalite güvencesi sertifikamızı yeniledik.",
+      "content": "Protek Analitik, laboratuvar test ve kalibrasyon faaliyetleri için uluslararası standart olan ISO/IEC 17025:2017 akreditasyonunu başarıyla yenilemiştir. ...",
+      "category": "sirket-haberleri",
+      "publishDate": "2024-01-10",
+      "imageUrl": "/images/lab-4.jpg",
+      "tags": [
+        "Akreditasyon",
+        "Kalite",
+        "Laboratuvar"
+      ],
+      "featured": false
+    }
+  ],
+  "events": [
+    {
+      "title": "F-İstanbul",
+      "description": "etkinlik açıklama",
+      "content": "asdşlmasm asdaklsmd asdlkmaslkdm",
+      "eventType": "seminer",
+      "startDate": "3321-02-21",
+      "endDate": "12123-03-12",
+      "location": "F-İstanbul ",
+      "imageUrl": "/uploads/products/1750878191359-duvar-6000x2800-3.jpg",
+      "featured": true,
+      "id": "f-istanbul-305",
+      "registrationUrl": "https://f-istanbul.com/"
+    }
+  ]
+}

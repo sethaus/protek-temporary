@@ -17,7 +17,6 @@ import {
   ArrowTopRightOnSquareIcon,
   BuildingOffice2Icon
 } from '@heroicons/react/24/outline'
-import { eventsData } from '@/data/news-events'
 import { useState, useEffect } from 'react'
 
 interface PageProps {
@@ -28,17 +27,59 @@ interface PageProps {
 
 export default function EtkinlikDetayPage({ params }: PageProps) {
   const router = useRouter()
-  const [event, setEvent] = useState(eventsData.find(e => e.id === params.id))
-  const [relatedEvents, setRelatedEvents] = useState(eventsData.filter(e => e.id !== params.id && e.eventType === event?.eventType).slice(0, 3))
+  const [event, setEvent] = useState<any | null>(null)
+  const [relatedEvents, setRelatedEvents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const foundEvent = eventsData.find(e => e.id === params.id)
-    if (!foundEvent) {
-      notFound()
+    const fetchEvent = async () => {
+      try {
+        // Tek etkinlik çek
+        const eventResponse = await fetch(`/api/events/${params.id}`)
+        const eventResult = await eventResponse.json()
+        
+        if (eventResult.success) {
+          setEvent(eventResult.data)
+          
+          // Tüm etkinlikleri çek ve ilgili etkinlikleri filtrele
+          const allEventsResponse = await fetch('/api/events')
+          const allEventsResult = await allEventsResponse.json()
+          
+          if (allEventsResult.success) {
+            const allEvents = allEventsResult.data
+            const related = allEvents.filter((e: any) => 
+              e.id !== params.id && e.eventType === eventResult.data.eventType
+            ).slice(0, 3)
+            setRelatedEvents(related)
+          }
+        } else {
+          notFound()
+        }
+      } catch (error) {
+        console.error('Etkinlik yükleme hatası:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
     }
-    setEvent(foundEvent)
-    setRelatedEvents(eventsData.filter(e => e.id !== params.id && e.eventType === foundEvent?.eventType).slice(0, 3))
+    
+    fetchEvent()
   }, [params.id])
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="pt-20 min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Etkinlik yükleniyor...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    )
+  }
 
   if (!event) {
     notFound()

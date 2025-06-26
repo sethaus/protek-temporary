@@ -40,7 +40,6 @@ import {
   LinkIcon,
   ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline'
-import { newsData, eventsData, getFeaturedNews, getFeaturedEvents, getUpcomingEvents } from '@/data/news-events'
 
 const sections = {
   "Haberler ve Etkinlikler": [
@@ -65,7 +64,37 @@ const sections = {
 
 export default function KaynaklarPage() {
   const [activeSection, setActiveSection] = useState('sirket-haberleri')
+  const [newsData, setNewsData] = useState<any[]>([])
+  const [eventsData, setEventsData] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
+
+  // API'den veri çek
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [newsRes, eventsRes] = await Promise.all([
+          fetch('/api/news'),
+          fetch('/api/events')
+        ])
+        const newsResult = await newsRes.json()
+        const eventsResult = await eventsRes.json()
+        
+        setNewsData(newsResult.data || [])
+        setEventsData(eventsResult.data || [])
+      } catch (error) {
+        console.error('Veri çekme hatası:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Helper functions
+  const getFeaturedNews = () => newsData.filter(news => news.featured)
+  const getFeaturedEvents = () => eventsData.filter(event => event.featured)
+  const getUpcomingEvents = () => eventsData.filter(event => new Date(event.startDate) > new Date())
 
   // Hash navigation handling
   useEffect(() => {
