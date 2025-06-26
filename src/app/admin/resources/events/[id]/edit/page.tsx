@@ -284,7 +284,7 @@ export default function EditEventPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kayıt URL'si
+                    {"Kayıt URL'si"}
                   </label>
                   <input
                     type="url"
@@ -294,7 +294,7 @@ export default function EditEventPage() {
                     placeholder="https://example.com/kayit"
                   />
                   <div className="mt-1 text-xs text-gray-500">
-                    Katılımcıların kayıt olabileceği web sayfası linki
+                    {"Katılımcıların kayıt olabileceği web sayfası linki"}
                   </div>
                 </div>
 

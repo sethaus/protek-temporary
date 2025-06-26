@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { 
@@ -65,7 +65,7 @@ export default function EditProductPage() {
   const [newCatalogName, setNewCatalogName] = useState('')
 
   // API'den ürün verisini çek
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/products')
@@ -105,11 +105,11 @@ export default function EditProductPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [productId, router])
 
   useEffect(() => {
     fetchProduct()
-  }, [productId])
+  }, [fetchProduct])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

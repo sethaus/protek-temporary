@@ -210,7 +210,7 @@ export default function EtkinlikDetayPage({ params }: PageProps) {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
                   <div className="prose prose-lg max-w-none">
-                    {event.content.split('\n').map((paragraph, index) => {
+                    {event.content.split('\n').map((paragraph: string, index: number) => {
                       if (paragraph.startsWith('## ')) {
                         return (
                           <h2 key={index} className="text-2xl font-bold text-gray-900 mt-8 mb-4">

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { 
@@ -52,7 +52,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   })
 
   // Fetch product from API
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/products')
@@ -79,11 +79,11 @@ export default function ProductPage({ params }: ProductPageProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.product])
 
   useEffect(() => {
     fetchProduct()
-  }, [params.product])
+  }, [fetchProduct])
 
   if (loading) {
     return (
