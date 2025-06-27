@@ -64,48 +64,43 @@ export default function EditProductPage() {
   const [newCatalogUrl, setNewCatalogUrl] = useState('')
   const [newCatalogName, setNewCatalogName] = useState('')
 
-  // API'den ürün verisini çek
   const fetchProduct = useCallback(async () => {
+    setLoading(true)
     try {
-      setLoading(true)
-      const response = await fetch('/api/products')
-      const data = await response.json()
+      const response = await fetch(`/api/products/${productId}`)
+      const result = await response.json()
       
-      if (data.success && Array.isArray(data.data)) {
-        const foundProduct = data.data.find((p: Product) => p.id === productId)
-        if (foundProduct) {
-          setProduct(foundProduct)
-      setForm({
-            name: foundProduct.name,
-            description: foundProduct.description,
-            overview: foundProduct.overview || '',
-            images: foundProduct.images || [foundProduct.image],
-            category: foundProduct.category,
-            subcategory: foundProduct.subcategory,
-            features: foundProduct.features.length > 0 ? foundProduct.features : [''],
-            applications: foundProduct.applications.length > 0 ? foundProduct.applications : [''],
-            specifications: foundProduct.specifications || {},
-            dataSheet: foundProduct.dataSheet || '',
-            price: foundProduct.price || '',
-            isWarrantied: (foundProduct as any).isWarrantied || false,
-            hasFreeShipping: (foundProduct as any).hasFreeShipping || false,
-            catalogFiles: (foundProduct as any).catalogFiles || []
-          })
-        } else {
-          alert('Ürün bulunamadı!')
-          router.push('/admin/products')
-        }
+      if (result.success) {
+        const productData = result.data
+        setProduct(productData)
+        
+        // Form verilerini set et
+        setForm({
+          name: productData.name || '',
+          description: productData.description || '',
+          overview: productData.overview || '',
+          images: Array.isArray(productData.images) ? productData.images : 
+                 productData.image ? [productData.image] : [],
+          category: productData.category || '',
+          subcategory: productData.subcategory || '',
+          features: Array.isArray(productData.features) ? productData.features : [''],
+          applications: Array.isArray(productData.applications) ? productData.applications : [''],
+          specifications: productData.specifications || {},
+          dataSheet: productData.dataSheet || '',
+          price: productData.price || '',
+          isWarrantied: productData.isWarrantied || false,
+          hasFreeShipping: productData.hasFreeShipping || false,
+          catalogFiles: productData.catalogFiles || []
+        })
       } else {
-        console.error('API hatası:', data)
-        alert('Ürün verisi yüklenirken hata oluştu.')
-    }
+        console.error('Ürün yüklenemedi:', result.error)
+      }
     } catch (error) {
-      console.error('Ürün yükleme hatası:', error)
-      alert('Ürün yüklenirken hata oluştu.')
+      console.error('Ürün getirme hatası:', error)
     } finally {
       setLoading(false)
     }
-  }, [productId, router])
+  }, [productId])
 
   useEffect(() => {
     fetchProduct()

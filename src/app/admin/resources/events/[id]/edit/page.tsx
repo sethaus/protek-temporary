@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable react/no-unescaped-entities */
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
@@ -75,7 +76,7 @@ export default function EditEventPage() {
           })
         }
       } catch (error) {
-        console.error('Etkinlik yükleme hatası:', error)
+        console.error(`Etkinlik yükleme hatası:`, error)
       }
     }
     
@@ -93,7 +94,7 @@ export default function EditEventPage() {
         registrationUrl: form.registrationUrl || undefined
       }
 
-      // API'ye PUT isteği gönder
+      // API ye PUT isteği gönder
       const response = await fetch(`/api/events/${eventId}`, {
         method: 'PUT',
         headers: {
@@ -105,14 +106,14 @@ export default function EditEventPage() {
       const result = await response.json()
 
       if (result.success) {
-        alert('Etkinlik başarıyla güncellendi!')
+        alert(`Etkinlik başarıyla güncellendi!`)
         router.push('/admin/resources')
       } else {
         alert(`Hata: ${result.error}`)
       }
     } catch (error) {
-      console.error('Etkinlik güncelleme hatası:', error)
-      alert('Hata: Etkinlik güncellenirken bir sorun oluştu.')
+      console.error(`Etkinlik güncelleme hatası:`, error)
+      alert(`Hata: Etkinlik güncellenirken bir sorun oluştu.`)
     } finally {
       setLoading(false)
     }
@@ -261,6 +262,7 @@ export default function EditEventPage() {
                   placeholder="Etkinlik detaylarını markdown formatında yazın..."
                 />
                 <div className="mt-2 text-xs text-gray-500">
+                  {/* eslint-disable-next-line react/no-unescaped-entities */}
                   Program, konuşmacılar, gündem gibi detayları markdown formatında ekleyebilirsiniz
                 </div>
               </div>
@@ -284,7 +286,7 @@ export default function EditEventPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {"Kayıt URL'si"}
+                    Kayıt URL'si
                   </label>
                   <input
                     type="url"
@@ -294,7 +296,8 @@ export default function EditEventPage() {
                     placeholder="https://example.com/kayit"
                   />
                   <div className="mt-1 text-xs text-gray-500">
-                    {"Katılımcıların kayıt olabileceği web sayfası linki"}
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                    Katılımcıların kayıt olabileceği web sayfası linki
                   </div>
                 </div>
 
@@ -307,6 +310,7 @@ export default function EditEventPage() {
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <label htmlFor="featured" className="ml-2 block text-sm text-gray-900">
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
                     Öne çıkarılsın
                   </label>
                 </div>

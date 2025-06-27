@@ -287,9 +287,9 @@ export default function NewEventPage() {
               <div className="text-sm text-blue-800 space-y-1">
                 <p><strong>Tür:</strong> {eventTypeOptions.find(t => t.value === form.eventType)?.label}</p>
                 {form.startDate && (
-                  <p><strong>Tarih:</strong> {new Date(form.startDate).toLocaleDateString('tr-TR')} 
+                                      <p><strong>Tarih:</strong> {new Date(form.startDate).toLocaleDateString(`tr-TR`)} 
                   {form.endDate && form.endDate !== form.startDate && 
-                    ` - ${new Date(form.endDate).toLocaleDateString('tr-TR')}`}
+                    ` - ${new Date(form.endDate).toLocaleDateString(`tr-TR`)}`}
                   </p>
                 )}
                 {form.location && <p><strong>Lokasyon:</strong> {form.location}</p>}

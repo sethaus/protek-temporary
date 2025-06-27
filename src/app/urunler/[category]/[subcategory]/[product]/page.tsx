@@ -51,35 +51,30 @@ export default function ProductPage({ params }: ProductPageProps) {
     triggerOnce: true,
   })
 
-  // Fetch product from API
   const fetchProduct = useCallback(async () => {
+    setLoading(true)
     try {
-      setLoading(true)
-      const response = await fetch('/api/products')
-      const data = await response.json()
+      const response = await fetch(`/api/products/${params.product}`)
+      const result = await response.json()
       
-      if (data.success && Array.isArray(data.data)) {
-        const foundProduct = data.data.find((p: Product) => p.id === params.product)
-        if (foundProduct) {
-          setProduct(foundProduct)
-          
-          // Get related products (same category and subcategory)
-          const related = data.data.filter((p: Product) => 
-            p.category === foundProduct.category && 
-            p.subcategory === foundProduct.subcategory && 
-            p.id !== foundProduct.id
-          ).slice(0, 4)
-          setRelatedProducts(related)
+      if (result.success) {
+        setProduct(result.data)
+        
+        // İlgili ürünleri getir
+        const relatedResponse = await fetch(`/api/products?category=${params.category}&subcategory=${params.subcategory}&limit=4&exclude=${params.product}`)
+        if (relatedResponse.ok) {
+          const relatedResult = await relatedResponse.json()
+          if (relatedResult.success && Array.isArray(relatedResult.data)) {
+            setRelatedProducts(relatedResult.data.slice(0, 4))
+          }
         }
-      } else {
-        console.error('Failed to fetch products:', data)
       }
     } catch (error) {
-      console.error('Error fetching product:', error)
+      console.error('Ürün yükleme hatası:', error)
     } finally {
       setLoading(false)
     }
-  }, [params.product])
+  }, [params.product, params.category, params.subcategory])
 
   useEffect(() => {
     fetchProduct()

@@ -222,7 +222,7 @@ export default function HaberDetayPage({ params }: PageProps) {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex items-center flex-wrap gap-2">
                   <TagIcon className="w-5 h-5 text-gray-400" />
-                  {news.tags.map((tag: string, index: number) => (
+                                      {news.tags.map((tag: string, index: number) => (
                     <span 
                       key={index}
                       className="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm hover:bg-gray-200 transition-colors cursor-pointer"
