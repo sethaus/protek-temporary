@@ -1,10 +1,17 @@
 import Airtable from 'airtable'
 import { Product } from '@/data/products'
 
-// Airtable Configuration
-const base = new Airtable({
-  apiKey: process.env.AIRTABLE_API_KEY!
-}).base(process.env.AIRTABLE_BASE_ID!)
+// Lazy Airtable Configuration
+let base: any = null
+
+function getAirtableBase() {
+  if (!base && process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
+    base = new Airtable({
+      apiKey: process.env.AIRTABLE_API_KEY
+    }).base(process.env.AIRTABLE_BASE_ID)
+  }
+  return base
+}
 
 // Table Names
 export const TABLES = {
@@ -20,6 +27,11 @@ export const airtableProducts = {
   // Get all products
   async getAll() {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.PRODUCTS).select({
         view: 'Grid view'
       }).all()
@@ -78,6 +90,11 @@ export const airtableProducts = {
   // Get product by ID
   async getById(id: string) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const record = await base(TABLES.PRODUCTS).find(id)
       const fields = record.fields as any
       
@@ -131,6 +148,11 @@ export const airtableProducts = {
   // Create new product
   async create(productData: any) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.PRODUCTS).create([{
         fields: productData
       }])
@@ -148,6 +170,11 @@ export const airtableProducts = {
   // Update product
   async update(id: string, productData: any) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.PRODUCTS).update([{id, fields: productData}])
       const record = records[0]
       return {
@@ -163,6 +190,11 @@ export const airtableProducts = {
   // Delete product
   async delete(id: string) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       await base(TABLES.PRODUCTS).destroy(id)
       return { success: true }
     } catch (error) {
@@ -176,6 +208,11 @@ export const airtableProducts = {
 export const airtableNews = {
   async getAll() {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.NEWS).select({
         view: 'Grid view'
       }).all()
@@ -192,6 +229,11 @@ export const airtableNews = {
 
   async create(newsData: any) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.NEWS).create([{
         fields: newsData
       }])
@@ -208,6 +250,11 @@ export const airtableNews = {
 
   async update(id: string, newsData: any) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.NEWS).update([{id, fields: newsData}])
       const record = records[0]
       return {
@@ -222,6 +269,11 @@ export const airtableNews = {
 
   async delete(id: string) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       await base(TABLES.NEWS).destroy(id)
       return { success: true }
     } catch (error) {
@@ -235,6 +287,11 @@ export const airtableNews = {
 export const airtableEvents = {
   async getAll() {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.EVENTS).select({
         view: 'Grid view'
       }).all()
@@ -251,6 +308,11 @@ export const airtableEvents = {
 
   async create(eventData: any) {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.EVENTS).create([{
         fields: eventData
       }])
@@ -270,6 +332,11 @@ export const airtableEvents = {
 export const airtableCategories = {
   async getAll() {
     try {
+      const base = getAirtableBase()
+      if (!base) {
+        throw new Error('Airtable not configured')
+      }
+      
       const records = await base(TABLES.CATEGORIES).select({
         view: 'Grid view'
       }).all()
