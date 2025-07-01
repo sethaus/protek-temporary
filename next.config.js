@@ -6,7 +6,13 @@ const nextConfig = {
   trailingSlash: false,
   
   // Webpack configuration for path aliases
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    // Cloudflare Pages'deki 25MB dosya boyutu limitini aşan büyük cache dosyası sorununu çözer.
+    // Bu, cache klasörünü build sonrası silmekten daha güvenli bir yöntemdir.
+    if (!isServer) {
+      config.cache = false;
+    }
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, 'src'),
