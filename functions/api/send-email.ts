@@ -113,7 +113,8 @@ export const onRequestPost: PagesFunction<{ GMAIL_USER: string; GMAIL_APP_PASSWO
 
   } catch (error) {
     console.error('E-posta gönderme hatası:', error);
-    return new Response(JSON.stringify({ success: false, message: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.' }), {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ success: false, message: `Sunucu Hatası: ${errorMessage}` }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
