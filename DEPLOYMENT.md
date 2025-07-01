@@ -25,9 +25,9 @@ git push origin main
 3. Build ayarları:
    - **Framework preset**: Next.js
    - **Build command**: `npm run build`
-   - **Build output directory**: `.next`
+   - **Build output directory**: `.next` (Next.js default)
    - **Root directory**: `/` (boş bırakın)
-   - **Node.js version**: `20.x`
+   - **Node.js version**: `18.x` veya `20.x`
 
 ### 3. Environment Variables
 Cloudflare Pages → Settings → Environment variables:
