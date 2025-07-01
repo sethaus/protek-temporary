@@ -2,6 +2,7 @@
 const path = require('path')
 
 const nextConfig = {
+  output: 'export',
   // Cloudflare Pages için optimize edilmiş ayarlar
   trailingSlash: false,
   

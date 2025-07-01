@@ -1,5 +1,5 @@
 # This is the valid configuration file for Cloudflare Pages.
 # It specifies the project name and the output directory for the Next.js build.
 name = "protek-analitik-website"
-pages_build_output_dir = ".next"
+pages_build_output_dir = "out"
 compatibility_date = "2024-07-01"
