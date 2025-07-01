@@ -159,49 +159,55 @@ export default function QuotePage() {
   }
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
-    setSubmitMessage('')
-    
+    setIsSubmitting(true);
+    setSubmitMessage('');
+    console.log('DEBUG: Form gönderim işlemi başladı...');
+
     try {
+      console.log('DEBUG: Gönderilecek form verisi:', { type: 'quote', ...formData });
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ type: 'quote', ...formData }),
-      })
-      
-      const result: { success: boolean; message?: string } = await response.json()
-      
-      if (response.ok && result.success) {
-        setSubmitMessage('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
-        // Formu sıfırla
+      });
+
+      console.log('DEBUG: Sunucudan yanıt alındı. Status:', response.status);
+      const responseText = await response.text();
+      console.log('DEBUG: Sunucu yanıt metni:', responseText);
+
+      if (!response.ok) {
+        // Sunucudan gelen hata mesajını göstermeye çalış
+        try {
+          const errorResult = JSON.parse(responseText);
+          setSubmitMessage(errorResult.message || `Sunucu hatası: ${response.status}`);
+        } catch (e) {
+          setSubmitMessage(`Sunucuya ulaşılamadı. Hata kodu: ${response.status}`);
+        }
+        return; // Hata durumunda işlemi sonlandır
+      }
+
+      const result = JSON.parse(responseText);
+
+      if (result.success) {
+        setSubmitMessage('Talebiniz başarıyla alındı! En kısa sürede size geri döneceğiz.');
         setFormData({
-          quoteType: '',
-          category: '',
-          subcategory: '',
-          customRequirement: '',
-          projectDetails: '',
-          budget: '',
-          timeline: '',
-          companyName: '',
-          contactPerson: '',
-          email: '',
-          phone: '',
-          position: '',
-          files: []
-        })
-        setCurrentStep(1)
+          quoteType: '', category: '', subcategory: '', customRequirement: '',
+          projectDetails: '', budget: '', timeline: '', companyName: '',
+          contactPerson: '', email: '', phone: '', position: '', files: []
+        });
+        setCurrentStep(1);
       } else {
-        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+        setSubmitMessage(result.message || 'Bilinmeyen bir hata oluştu.');
       }
     } catch (error) {
-      console.error('Form gönderme hatası:', error)
-      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+      console.error('DEBUG: Form gönderiminde kritik bir hata yakalandı:', error);
+      setSubmitMessage('İstek gönderilemedi. Lütfen tarayıcı konsolunu kontrol edin.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const renderStep1 = () => (
     <div className="space-y-10">
