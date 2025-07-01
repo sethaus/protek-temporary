@@ -50,10 +50,20 @@ const contactSections: ContactSection[] = [
   { id: 'kurulum-hizmetleri', title: 'Kurulum Hizmetleri', icon: CogIcon, category: 'Lojistik ve Teslimat' }
 ]
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
 export default function ContactPage() {
   const [activeSection, setActiveSection] = useState('genel-mudurluk')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState('')
+  const [submitMessage, setSubmitMessage] = useState('');
+
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
   
   // Form states
   const [complaintForm, setComplaintForm] = useState({
@@ -142,7 +152,7 @@ export default function ContactPage() {
         })
       })
       
-      const result = await response.json()
+      const result: ApiResponse = await response.json()
       
       if (result.success) {
         setSubmitMessage('Geri bildiriminiz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
@@ -183,7 +193,7 @@ export default function ContactPage() {
         })
       })
       
-      const result = await response.json()
+      const result: ApiResponse = await response.json()
       
       if (result.success) {
         setSubmitMessage('Eğitim talep formunuz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
