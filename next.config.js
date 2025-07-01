@@ -1,7 +1,23 @@
 /** @type {import('next').NextConfig} */
+const path = require('path')
+
 const nextConfig = {
   // Cloudflare Pages için optimize edilmiş ayarlar
   trailingSlash: false,
+  
+  // Webpack configuration for path aliases
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+      '@/components': path.resolve(__dirname, 'src/components'),
+      '@/lib': path.resolve(__dirname, 'src/lib'),
+      '@/styles': path.resolve(__dirname, 'src/styles'),
+      '@/types': path.resolve(__dirname, 'src/types'),
+      '@/utils': path.resolve(__dirname, 'src/utils'),
+    }
+    return config
+  },
   
   images: {
     remotePatterns: [
