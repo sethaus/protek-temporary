@@ -1,7 +1,4 @@
 'use client'
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// @ts-nocheck
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -271,7 +268,7 @@ export default function KaynaklarPage() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
                                 <span className="flex-shrink-0">{formatDate(news.publishDate)}</span>
                                 <div className="flex flex-wrap gap-1">
-                                  {news.tags.slice(0, 3).map((tag, tagIndex) => (
+                                  {news.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                                     <span key={tagIndex} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hyphens-auto break-words">
                                       {tag}
                                     </span>
@@ -336,7 +333,7 @@ export default function KaynaklarPage() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
                                 <span className="flex-shrink-0">{formatDate(news.publishDate)}</span>
                                 <div className="flex flex-wrap gap-1">
-                                  {news.tags.slice(0, 3).map((tag, tagIndex) => (
+                                  {news.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                                     <span key={tagIndex} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hyphens-auto break-words">
                                       {tag}
                                     </span>
@@ -481,7 +478,7 @@ export default function KaynaklarPage() {
                               <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
                                 <span className="flex-shrink-0">{formatDate(story.publishDate)}</span>
                                 <div className="flex flex-wrap gap-1">
-                                  {story.tags.slice(0, 3).map((tag, tagIndex) => (
+                                  {story.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
                                     <span key={tagIndex} className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs hyphens-auto break-words">
                                       {tag}
                                     </span>

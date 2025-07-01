@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Cloudflare Pages için optimize edilmiş ayarlar
-  output: 'standalone',
   trailingSlash: false,
   
   images: {
@@ -30,10 +29,7 @@ const nextConfig = {
     ignoreDuringBuilds: false, // Production'da lint check yapalım
   },
   
-  // Experimental özellikler
-  experimental: {
-    serverComponentsExternalPackages: ['resend'],
-  },
+  // Experimental özellikler - temizlendi
   async headers() {
     return [
       {
