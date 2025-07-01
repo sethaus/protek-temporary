@@ -61,33 +61,52 @@ const generateProductUrl = (product: any) => {
 export default function Products() {
   const [selected, setSelected] = useState('all')
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Fetch products from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/products')
+      const data: { success: boolean, data: Product[] } = await response.json()
+      
+      if (data.success && Array.isArray(data.data)) {
+        setProducts(data.data.slice(0, 8))
+      } else {
+        console.error('Failed to fetch products:', data)
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
 
   // Alt kategori listesi
   const subcategories = selected === 'all'
     ? []
     : productCategories.find(cat => cat.key === selected)?.subcategories || []
 
-  // Seçili ürünler - statik veriden filtrele
-  const filteredProducts = (() => {
-    let products: Product[] = [];
-    if (selected === 'all') {
-      products = productCategories.flatMap(category => 
-        category.subcategories.flatMap(subcategory => subcategory.products)
-      );
-    } else {
-      const category = productCategories.find(cat => cat.key === selected);
-      if (category) {
-        if (selectedSub) {
-          const subcategory = category.subcategories.find(sub => sub.key === selectedSub);
-          products = subcategory ? subcategory.products : [];
-        } else {
-          products = category.subcategories.flatMap(sub => sub.products);
-        }
-      }
-    }
-    return products.slice(0, 8);
-  })();
+  // Seçili ürünler - API'den gelen ürünleri filtrele
+  let filteredProducts = [] as Product[]
+  if (selected === 'all') {
+    filteredProducts = products
+  } else if (selectedSub) {
+    filteredProducts = products.filter(product => 
+      product.category === productCategories.find(cat => cat.key === selected)?.name &&
+      product.subcategory === productCategories.find(cat => cat.key === selected)?.subcategories.find(sub => sub.key === selectedSub)?.name
+    )
+  } else {
+    filteredProducts = products.filter(product => 
+      product.category === productCategories.find(cat => cat.key === selected)?.name
+    )
+  }
 
   // Yatay scroll fonksiyonları
   const scroll = (dir: 'left' | 'right') => {
@@ -100,6 +119,23 @@ export default function Products() {
     })
   }
 
+  if (loading) {
+    return (
+      <section className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="text-center space-y-4 mb-8">
+            <h2 className="text-gradient">Ürünlerimiz</h2>
+            <p className="text-body-lg text-neutral-600 max-w-3xl mx-auto">
+              Ürünler yükleniyor...
+            </p>
+          </div>
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="section-padding bg-white">
