@@ -163,12 +163,12 @@ export default function QuotePage() {
     setSubmitMessage('')
     
     try {
-      const response = await fetch('/api/send-quote', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, type: 'quote' })
       })
       
       const result = await response.json()

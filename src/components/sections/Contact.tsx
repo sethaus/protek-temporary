@@ -28,13 +28,13 @@ export default function Contact() {
     setSubmitMessage('')
 
     try {
-      const response = await fetch('/api/send-contact', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          type: 'genel',
+          type: 'contact', // Use the new centralized API endpoint type
           name: formData.name,
           email: formData.email,
           subject: formData.subject,
