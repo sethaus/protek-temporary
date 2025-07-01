@@ -1,6 +1,7 @@
 export interface Product {
   id: string
   name: string
+  model?: string
   description: string
   overview?: string  // Added field for general overview content
   image: string
@@ -52,6 +53,7 @@ export const productCategories: Category[] = [
             created_at: '2023-01-01T00:00:00.000Z',
             updated_at: '2023-12-15T10:30:00.000Z',
             name: 'Digital Refraktometre DR-A1',
+            model: 'DR-A1',
             description: 'Brix ve refraktif indeks tayini için otomatik sıcaklık kompanzasyonlu dijital refraktometre',
             overview: 'Digital Refraktometre DR-A1, gıda endüstrisi ve içecek üretiminde en yüksek hassasiyetle Brix ve refraktif indeks ölçümü yapan profesyonel bir laboratuvar cihazıdır.\n\nBu gelişmiş refraktometre, otomatik sıcaklık kompanzasyonu teknolojisi sayesinde çevresel sıcaklık değişimlerinden etkilenmeden doğru sonuçlar verir. Su geçirmez tasarımı ile zorlu laboratuvar koşullarında güvenle kullanılabilir.\n\nKolay kalibasyon özelliği ile hızlı kurulum sağlar ve rutin bakım gereksinimlerini minimize eder. Özellikle şeker analizi, meyve suyu kalite kontrolü ve gıda üretim süreçlerinde tercih edilen güvenilir bir çözümdür.',
             image: '/images/lab-1.jpg',
@@ -70,6 +72,7 @@ export const productCategories: Category[] = [
             created_at: '2023-01-02T00:00:00.000Z',
             updated_at: '2024-01-10T14:20:00.000Z',
             name: 'AquaLab 4TE Su Aktivite Ölçer',
+            model: '4TE',
             description: 'Su aktivite tayini ve sorpsiyon-desorpsiyon analizi için yüksek hassasiyetli cihaz',
             image: '/images/lab-2.jpg',
             category: 'Laboratuvar Ekipmanları, Sarf Malzemeler Ve Kitler',
@@ -87,6 +90,7 @@ export const productCategories: Category[] = [
             created_at: '2023-01-03T00:00:00.000Z',
             updated_at: '2023-11-28T09:15:00.000Z',
             name: 'Colorimeter CR-400',
+            model: 'CR-400',
             description: 'Organoleptik analizler için profesyonel renk ölçüm cihazı',
             image: '/images/lab-3.jpg',
             category: 'Laboratuvar Ekipmanları, Sarf Malzemeler Ve Kitler',
