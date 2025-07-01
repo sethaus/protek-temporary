@@ -131,20 +131,17 @@ export default function ContactPage() {
     setSubmitMessage('')
     
     try {
-      const response = await fetch('/api/send-contact', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          formType: 'complaint',
-          ...complaintForm
-        })
+        body: JSON.stringify({ ...complaintForm, type: 'complaint' }),
       })
+
+      const result: { success: boolean; message?: string } = await response.json()
       
-      const result = await response.json()
-      
-      if (result.success) {
+      if (response.ok && result.success) {
         setSubmitMessage('Geri bildiriminiz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
         setComplaintForm({
           complaintType: 'Şikayet',
@@ -156,11 +153,11 @@ export default function ContactPage() {
           company: ''
         })
       } else {
-        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
       }
     } catch (error) {
-      console.error('Form gönderme hatası:', error)
-      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+      console.error('Complaint form submission error:', error)
+      setSubmitMessage('Ağ hatası. Lütfen internet bağlantınızı kontrol edin.')
     } finally {
       setIsSubmitting(false)
     }
@@ -170,23 +167,20 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitMessage('')
-    
+
     try {
-      const response = await fetch('/api/send-contact', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          formType: 'training',
-          ...trainingForm
-        })
+        body: JSON.stringify({ ...trainingForm, type: 'training' }),
       })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        setSubmitMessage('Eğitim talep formunuz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+
+      const result: { success: boolean; message?: string } = await response.json()
+
+      if (response.ok && result.success) {
+        setSubmitMessage('Eğitim talebiniz başarıyla gönderildi! Ekibimiz sizinle iletişime geçecektir.')
         setTrainingForm({
           trainingType: 'Temel Kullanıcı Eğitimi',
           participantCount: '',
@@ -199,11 +193,11 @@ export default function ContactPage() {
           position: ''
         })
       } else {
-        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
       }
     } catch (error) {
-      console.error('Form gönderme hatası:', error)
-      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+      console.error('Training form submission error:', error)
+      setSubmitMessage('Ağ hatası. Lütfen internet bağlantınızı kontrol edin.')
     } finally {
       setIsSubmitting(false)
     }

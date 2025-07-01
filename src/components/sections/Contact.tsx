@@ -42,7 +42,9 @@ export default function Contact() {
         }),
       })
 
-      if (response.ok) {
+      const result: { success: boolean; message?: string } = await response.json();
+
+      if (response.ok && result.success) {
         setSubmitMessage('Mesajınız başarıyla gönderildi!')
         setFormData({ name: '', email: '', subject: '', message: '' })
       } else {

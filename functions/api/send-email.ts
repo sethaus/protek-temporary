@@ -1,113 +1,119 @@
 import nodemailer from 'nodemailer';
 
-// Define the expected structure for form data
 interface FormData {
-  type: 'contact' | 'quote';
+  type: 'contact' | 'quote' | 'complaint' | 'training';
   [key: string]: any;
 }
 
-// Define the Cloudflare Pages function handler
-export const onRequestPost: PagesFunction<{ GMAIL_USER: string; GMAIL_APP_PASSWORD: string }> = async (context) => {
+export const onRequestPost: PagesFunction<{ GMAIL_USER: string; GMAIL_APP_PASSWORD: string; }> = async (context) => {
   try {
     const { request, env } = context;
     const body: FormData = await request.json();
-    const { type, ...formData } = body;
+    const { GMAIL_USER, GMAIL_APP_PASSWORD } = env;
 
-    // Ensure environment variables are set in Cloudflare dashboard
-    if (!env.GMAIL_USER || !env.GMAIL_APP_PASSWORD) {
-      console.error('Gmail credentials are not set in Cloudflare environment variables.');
-      return new Response(JSON.stringify({ message: 'Server configuration error.' }), {
+    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+      return new Response(JSON.stringify({ success: false, message: 'E-posta sunucu ayarları eksik.' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
-      auth: {
-        user: env.GMAIL_USER,
-        pass: env.GMAIL_APP_PASSWORD,
-      },
+      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
     });
 
-    let mailOptions;
+    let subject = '';
+    let htmlBody = '';
+    let replyTo = body.email;
     const recipientEmail = 'info@protekanalitik.com';
 
-    if (type === 'contact') {
-      const { name, email, subject, message } = formData;
-      if (!name || !email || !subject || !message) {
-        return new Response(JSON.stringify({ message: 'Missing required fields for contact form.' }), { status: 400 });
-      }
-      mailOptions = {
-        from: `\"${name}\" <${env.GMAIL_USER}>`,
-        to: recipientEmail,
-        replyTo: email,
-        subject: `Yeni İletişim Formu Mesajı: ${subject}`,
-        html: `
-          <h1>Yeni İletişim Formu Mesajı</h1>
-          <p><strong>Gönderen:</strong> ${name}</p>
-          <p><strong>E-posta:</strong> ${email}</p>
-          <p><strong>Konu:</strong> ${subject}</p>
+    switch (body.type) {
+      case 'contact':
+        subject = `Yeni İletişim Formu Mesajı: ${body.name}`;
+        htmlBody = `
+          <h3>Yeni Bir İletişim Formu Mesajınız Var</h3>
+          <p><strong>Ad Soyad:</strong> ${body.name}</p>
+          <p><strong>E-posta:</strong> ${body.email}</p>
+          <p><strong>Telefon:</strong> ${body.phone}</p>
+          <p><strong>Mesaj:</strong></p>
+          <p>${body.message}</p>
+        `;
+        break;
+
+      case 'quote':
+        subject = `Yeni Teklif Talebi: ${body.company || body.name}`;
+        htmlBody = `
+          <h3>Yeni Bir Teklif Talebiniz Var</h3>
+          <p><strong>Ad Soyad:</strong> ${body.name}</p>
+          <p><strong>Firma Adı:</strong> ${body.company}</p>
+          <p><strong>E-posta:</strong> ${body.email}</p>
+          <p><strong>Telefon:</strong> ${body.phone}</p>
           <hr>
-          <h2>Mesaj:</h2>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-        `,
-      };
-    } else if (type === 'quote') {
-      const {
-        quoteType, category, subcategory, customRequirement,
-        projectDetails, budget, timeline,
-        companyName, contactPerson, email, phone, position
-      } = formData;
-      if (!companyName || !contactPerson || !email || !phone) {
-        return new Response(JSON.stringify({ message: 'Missing required fields for quote form.' }), { status: 400 });
-      }
-      mailOptions = {
-        from: `\"${contactPerson}\" <${env.GMAIL_USER}>`,
-        to: recipientEmail,
-        replyTo: email,
-        subject: `Yeni Teklif Talebi: ${quoteType === 'product' ? 'Ürün Teklifi' : 'Çözüm Paketi'}`,
-        html: `
-          <h1>Yeni Teklif Talebi</h1>
-          <h2>Aşama 1: İhtiyaç Tespiti</h2>
-          <p><strong>Teklif Türü:</strong> ${quoteType === 'product' ? 'Ürün Teklifi' : 'Çözüm Paketi'}</p>
-          <p><strong>Kategori:</strong> ${category || 'Belirtilmedi'}</p>
-          <p><strong>Alt Kategori/Ürün:</strong> ${subcategory || 'Belirtilmedi'}</p>
-          <p><strong>Özel Gereksinim:</strong> ${customRequirement ? customRequirement.replace(/\n/g, '<br>') : 'Yok'}</p>
+          <h4>Talep Detayları:</h4>
+          <pre>${JSON.stringify(body.stepData, null, 2)}</pre>
+        `;
+        break;
+
+      case 'complaint':
+        subject = `Yeni Şikayet/Öneri Formu: ${body.complaintSubject}`;
+        htmlBody = `
+          <h3>Yeni Bir Şikayet/Öneri Formu Aldınız</h3>
+          <p><strong>Gönderen:</strong> ${body.name}</p>
+          <p><strong>Firma:</strong> ${body.company}</p>
+          <p><strong>E-posta:</strong> ${body.email}</p>
+          <p><strong>Telefon:</strong> ${body.phone}</p>
           <hr>
-          <h2>Aşama 2: Proje Detayları</h2>
-          <p><strong>Proje Detayları:</strong> ${projectDetails.replace(/\n/g, '<br>')}</p>
-          <p><strong>Bütçe Aralığı:</strong> ${budget}</p>
-          <p><strong>Zaman Planı:</strong> ${timeline}</p>
+          <p><strong>Form Tipi:</strong> ${body.complaintType}</p>
+          <p><strong>Konu:</strong> ${body.complaintSubject}</p>
+          <p><strong>Detaylar:</strong></p>
+          <p>${body.complaintDetails}</p>
+        `;
+        break;
+
+      case 'training':
+        subject = `Yeni Eğitim Talebi: ${body.trainingType}`;
+        htmlBody = `
+          <h3>Yeni Bir Eğitim Talebi Aldınız</h3>
+          <p><strong>Gönderen:</strong> ${body.name}</p>
+          <p><strong>Unvan:</strong> ${body.position}</p>
+          <p><strong>Firma:</strong> ${body.company}</p>
+          <p><strong>E-posta:</strong> ${body.email}</p>
+          <p><strong>Telefon:</strong> ${body.phone}</p>
           <hr>
-          <h2>Aşama 3: İletişim Bilgileri</h2>
-          <p><strong>Firma Adı:</strong> ${companyName}</p>
-          <p><strong>Yetkili Kişi:</strong> ${contactPerson}</p>
-          <p><strong>E-posta:</strong> ${email}</p>
-          <p><strong>Telefon:</strong> ${phone}</p>
-          <p><strong>Pozisyon:</strong> ${position || 'Belirtilmedi'}</p>
-        `,
-      };
-    } else {
-      return new Response(JSON.stringify({ message: 'Invalid form type specified.' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+          <p><strong>Talep Edilen Eğitim:</strong> ${body.trainingType}</p>
+          <p><strong>Katılımcı Sayısı:</strong> ${body.participantCount}</p>
+          <p><strong>Tercih Edilen Tarih:</strong> ${body.preferredDate}</p>
+          <p><strong>Ek Notlar:</strong></p>
+          <p>${body.additionalNotes}</p>
+        `;
+        break;
+
+      default:
+        return new Response(JSON.stringify({ success: false, message: 'Geçersiz form tipi.' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
     }
 
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail({
+      from: `"Protek Analitik Web" <${GMAIL_USER}>`,
+      to: recipientEmail,
+      replyTo: replyTo,
+      subject: subject,
+      html: htmlBody,
+    });
 
-    return new Response(JSON.stringify({ message: 'Email sent successfully!' }), {
+    return new Response(JSON.stringify({ success: true, message: 'E-posta başarıyla gönderildi.' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error sending email:', error);
-    return new Response(JSON.stringify({ message: 'Failed to send email.' }), {
+    console.error('E-posta gönderme hatası:', error);
+    return new Response(JSON.stringify({ success: false, message: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

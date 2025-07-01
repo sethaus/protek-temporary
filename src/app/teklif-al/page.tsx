@@ -168,12 +168,12 @@ export default function QuotePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...formData, type: 'quote' })
+        body: JSON.stringify({ type: 'quote', ...formData }),
       })
       
-      const result = await response.json()
+      const result: { success: boolean; message?: string } = await response.json()
       
-      if (result.success) {
+      if (response.ok && result.success) {
         setSubmitMessage('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
         // Formu sıfırla
         setFormData({
