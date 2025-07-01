@@ -70,10 +70,10 @@ export default function Products() {
     try {
       setLoading(true)
       const response = await fetch('/api/products')
-      const data = await response.json()
+      const data: { success: boolean, data: Product[] } = await response.json()
       
       if (data.success && Array.isArray(data.data)) {
-        setProducts(data.data)
+        setProducts(data.data.slice(0, 8))
       } else {
         console.error('Failed to fetch products:', data)
       }

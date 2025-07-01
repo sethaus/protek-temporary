@@ -72,13 +72,18 @@ export default function ProductsPage() {
     triggerOnce: true,
   })
 
+  interface ApiResponse {
+    success: boolean;
+    data: any[];
+  }
+
   // Fetch products from API
   const fetchProducts = async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/products')
-      const data = await response.json()
-      
+      const data: ApiResponse = await response.json()
+
       if (data.success && Array.isArray(data.data)) {
         setProducts(data.data)
       } else {
