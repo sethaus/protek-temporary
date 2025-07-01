@@ -29,10 +29,7 @@ git push origin main
    - **Root directory**: `/` (boş bırakın)
    - **Node.js version**: `18.x`, `20.x` veya `22.x` (hepsi destekleniyor)
 
-**ÖNEMLİ**: 
-- ✅ Tüm @ import'ları relative path'e çevrildi
-- ✅ wrangler.toml kaldırıldı (Cloudflare ile çakışma sorunu çözüldü)
-- ✅ Build sorunları tamamen çözüldü
+**ÖNEMLİ**: Webpack path aliases ve wrangler.toml konfigürasyonu eklendi, build sorunları çözüldü.
 
 ### 3. Environment Variables
 Cloudflare Pages → Settings → Environment variables:

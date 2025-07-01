@@ -2,27 +2,14 @@
 const path = require('path')
 
 const nextConfig = {
-  // Cloudflare Pages dosya boyutu optimizasyonu için yapılandırma
-  output: 'standalone', // Server component'ler için standalone gerekli
-  poweredByHeader: false,
-  swcMinify: true, // SWC minifier etkinleştirme
+  // Cloudflare Pages için optimize edilmiş ayarlar
+  trailingSlash: false,
   
-  // Webpack configuration for path aliases ve optimizasyonlar
+  // Webpack configuration for path aliases
   webpack: (config) => {
-    // Webpack optimizasyonları
-    config.optimization.minimize = true;
-    
-    // Bundle boyutunu azaltmak için üçüncü parti kütüphaneleri parçala
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      maxInitialRequests: 25,
-      minSize: 20000
-    };
-    
-    // Alias tanımlamaları
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': __dirname,
+      '@': path.resolve(__dirname, 'src'),
       '@/components': path.resolve(__dirname, 'src/components'),
       '@/lib': path.resolve(__dirname, 'src/lib'),
       '@/styles': path.resolve(__dirname, 'src/styles'),
@@ -41,26 +28,45 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
+        port: '',
         pathname: '/**',
       }
     ],
-    // Görüntü optimizasyon ayarları
-    minimumCacheTTL: 60,
     formats: ['image/webp', 'image/avif'],
+    // Cloudflare Pages için unoptimized images
+    unoptimized: process.env.NODE_ENV === 'production',
   },
   
-  // Build optimizasyonları - bundle boyutunu küçültmek için
+  // Build optimizasyonları
   typescript: {
-    // Type checking'i build sırasında atlayalım
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Production'da type check yapalım
   },
   eslint: {
-    // Lint checking'i build sırasında atlayalım
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Production'da lint check yapalım
   },
   
-  // Statik export'ta headers desteklenmiyor
-  // Headers için Cloudflare Pages custom headers kullanılacak
+  // Experimental özellikler - temizlendi
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig 
