@@ -23,8 +23,8 @@ import {
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
 import { productCategories, getProductById, type Product } from '@/data/products'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '../../../../../components/layout/Header'
+import Footer from '../../../../../components/layout/Footer'
 
 const iconMap = {
   beaker: BeakerIcon,

@@ -6,8 +6,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRightIcon, HomeIcon, BeakerIcon, CubeIcon, WrenchIcon } from '@heroicons/react/24/outline'
 import { productCategories } from '@/data/products'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '../../../../components/layout/Header'
+import Footer from '../../../../components/layout/Footer'
 
 const iconMap = {
   beaker: BeakerIcon,

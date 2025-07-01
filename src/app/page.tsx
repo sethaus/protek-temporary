@@ -1,6 +1,6 @@
 'use client'
 
-import Header from '@/components/layout/Header'
+import Header from '../components/layout/Header'
 import Hero from '@/components/sections/Hero'
 import Features from '@/components/sections/Features'
 import Solutions from '@/components/sections/Solutions'
@@ -9,7 +9,7 @@ import Clients from '@/components/sections/Clients'
 import Sectors from '@/components/sections/Sectors'
 import About from '@/components/sections/About'
 import Contact from '@/components/sections/Contact'
-import Footer from '@/components/layout/Footer'
+import Footer from '../components/layout/Footer'
 
 export default function HomePage() {
   return (
