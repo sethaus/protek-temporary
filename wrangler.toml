@@ -3,13 +3,8 @@ name = "protekanalitik-com"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = ".next"
 
-[build]
-command = "npm run build"
-cwd = "."
-
-[build.environment_variables]
-NODE_VERSION = "20"
-NPM_VERSION = "10"
-
-# Environment variables (production'da Cloudflare dashboard'dan ayarlanacak)
-# RESEND_API_KEY = "your-resend-api-key"
+# Environment variables should be set in Cloudflare Pages Dashboard
+# Settings -> Environment variables:
+# GMAIL_USER = "websiteform@protekanalitik.com"
+# GMAIL_APP_PASSWORD = "your-app-password"
+# NODE_ENV = "production"
