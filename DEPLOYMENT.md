@@ -21,13 +21,15 @@ git push origin main
 
 ### 2. Cloudflare Pages Kurulumu
 1. Cloudflare Dashboard → Pages → Create a project
-2. Connect to Git → GitHub repository seçin
+2. Connect to Git → GitHub repository seçin: `sethaus/protek-temporary`
 3. Build ayarları:
    - **Framework preset**: Next.js
    - **Build command**: `npm run build`
-   - **Build output directory**: `.next` (Next.js default)
+   - **Build output directory**: `.next`
    - **Root directory**: `/` (boş bırakın)
-   - **Node.js version**: `18.x` veya `20.x`
+   - **Node.js version**: `18.x`, `20.x` veya `22.x` (hepsi destekleniyor)
+
+**ÖNEMLİ**: Webpack path aliases ve wrangler.toml konfigürasyonu eklendi, build sorunları çözüldü.
 
 ### 3. Environment Variables
 Cloudflare Pages → Settings → Environment variables:
