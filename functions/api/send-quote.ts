@@ -1,36 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
 
-// Email SMTP transporter oluştur (Gmail veya Outlook)
-const createTransporter = () => {
+// Define the environment variables we expect
+interface Env {
+  GMAIL_USER: string;
+  GMAIL_APP_PASSWORD: string;
+  // Add other env vars if needed, e.g., for Outlook
+  OUTLOOK_USER?: string;
+  OUTLOOK_PASSWORD?: string;
+}
+
+// Email SMTP transporter oluştur
+const createTransporter = (env: Env) => {
   // Gmail kullanıyorsanız
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+  if (env.GMAIL_USER && env.GMAIL_APP_PASSWORD) {
     return nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user: env.GMAIL_USER,
+        pass: env.GMAIL_APP_PASSWORD,
       },
-    })
+    });
   }
   
-  // Outlook kullanıyorsanız (daha kolay)
-  if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD) {
+  // Outlook kullanıyorsanız
+  if (env.OUTLOOK_USER && env.OUTLOOK_PASSWORD) {
     return nodemailer.createTransport({
       service: 'hotmail',
       auth: {
-        user: process.env.OUTLOOK_USER,
-        pass: process.env.OUTLOOK_PASSWORD,
+        user: env.OUTLOOK_USER,
+        pass: env.OUTLOOK_PASSWORD,
       },
-    })
+    });
   }
   
-  throw new Error('Email konfigürasyonu bulunamadı')
-}
+  throw new Error('Email konfigürasyonu bulunamadı');
+};
 
-export async function POST(request: NextRequest) {
+// Handle POST requests to /api/send-quote
+export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const body = await request.json()
+    const body = await request.json();
     
     const {
       quoteType,
@@ -45,10 +54,10 @@ export async function POST(request: NextRequest) {
       email,
       phone,
       position,
-      files
-    } = body
+      files // Note: file handling will be different in serverless, this example assumes JSON data
+    } = body;
 
-    // Email içeriğini hazırla
+    // Email içeriğini hazırla (This is the same HTML content from the original file)
     const emailContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
@@ -147,34 +156,39 @@ export async function POST(request: NextRequest) {
           </p>
         </div>
       </div>
-    `
+    `;
 
     // Gmail SMTP ile email gönder
-    const transporter = createTransporter()
+    const transporter = createTransporter(env);
     
     const mailOptions = {
-      from: `"Protek Analitik Website" <${process.env.GMAIL_USER || process.env.OUTLOOK_USER}>`,
+      from: `"Protek Analitik Website" <${env.GMAIL_USER || env.OUTLOOK_USER}>`,
       to: 'websiteform@protekanalitik.com',
       subject: `Yeni Teklif Talebi - ${companyName} (${category})`,
       html: emailContent,
       replyTo: email
-    }
+    };
 
-    await transporter.sendMail(mailOptions)
+    await transporter.sendMail(mailOptions);
 
-    return NextResponse.json({ 
+    const responseBody = { 
       success: true, 
       message: 'Teklif talebiniz başarıyla gönderildi!' 
-    })
+    };
+    return new Response(JSON.stringify(responseBody), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
 
   } catch (error) {
-    console.error('Email gönderme hatası:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'E-posta gönderilirken bir hata oluştu. Lütfen tekrar deneyin.' 
-      },
-      { status: 500 }
-    )
+    console.error('Email gönderme hatası:', error);
+    const errorBody = { 
+      success: false, 
+      message: 'E-posta gönderilirken bir hata oluştu. Lütfen tekrar deneyin.' 
+    };
+    return new Response(JSON.stringify(errorBody), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
-}
+};
