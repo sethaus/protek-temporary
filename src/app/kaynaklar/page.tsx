@@ -42,15 +42,8 @@ import {
 } from '@heroicons/react/24/outline'
 
 const sections = {
-  "Haberler ve Etkinlikler": [
-    { id: "sirket-haberleri", name: "Şirket Haberleri", icon: NewspaperIcon },
-    { id: "sektor-guncel", name: "Sektör Güncel", icon: ArrowTrendingUpIcon },
-    { id: "etkinlik-takvimi", name: "Etkinlik Takvimi", icon: CalendarDaysIcon },
-    { id: "basari-hikayeleri", name: "Başarı Hikayeleri", icon: TrophyIcon }
-  ],
   "Dokümantasyon": [
     { id: "urun-katalogu", name: "Ürün Kataloğu", icon: BookOpenIcon },
-
     { id: "metod-ornekleri", name: "Metod Örnekleri", icon: ClipboardDocumentCheckIcon }
   ],
   "Eğitim ve Destek": [
@@ -59,41 +52,13 @@ const sections = {
   ]
 }
 
-interface ApiResponse<T> {
-  data: T[];
-}
+
 
 export default function KaynaklarPage() {
-  const [activeSection, setActiveSection] = useState('sirket-haberleri')
-  const [newsData, setNewsData] = useState<any[]>([])
-  const [eventsData, setEventsData] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [activeSection, setActiveSection] = useState('urun-katalogu')
   const router = useRouter()
 
-  // API'den veri çek
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const newsRes = await fetch('/api/news')
-        const eventsRes = await fetch('/api/events')
-        const newsResult: ApiResponse<any> = await newsRes.json()
-        const eventsResult: ApiResponse<any> = await eventsRes.json()
-        
-        setNewsData(newsResult.data || [])
-        setEventsData(eventsResult.data || [])
-      } catch (error) {
-        console.error('Veri çekme hatası:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
-
-  // Helper functions
-  const getFeaturedNews = () => newsData.filter(news => news.featured)
-  const getFeaturedEvents = () => eventsData.filter(event => event.featured)
-  const getUpcomingEvents = () => eventsData.filter(event => new Date(event.startDate) > new Date())
+  // Dinamik veri çekme kodları kaldırıldı.
 
   // Hash navigation handling
   useEffect(() => {
@@ -149,19 +114,7 @@ export default function KaynaklarPage() {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('tr-TR', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })
-  }
-
   const groupedSections = sections
-  const featuredNews = getFeaturedNews()
-  const featuredEvents = getFeaturedEvents()
-  const upcomingEvents = getUpcomingEvents()
 
   return (
     <>
@@ -236,275 +189,8 @@ export default function KaynaklarPage() {
 
             {/* Main Content */}
             <div className="flex-1 space-y-16">
-              {/* Şirket Haberleri */}
-              <section id="sirket-haberleri" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <NewspaperIcon className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 hyphens-auto break-words">Şirket Haberleri</h2>
-                      <p className="text-gray-600 hyphens-auto break-words">Şirket gelişmeleri ve duyurular</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {newsData.filter(news => news.category === 'sirket-haberleri').length > 0 ? (
-                      newsData.filter(news => news.category === 'sirket-haberleri').map((news, index) => (
-                        <article key={index} className="flex flex-col md:flex-row gap-6 p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                          <img 
-                            src={news.imageUrl} 
-                            alt={news.title}
-                            className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-3">
-                              <h3 className="font-semibold text-gray-900 text-lg hyphens-auto break-words">{news.title}</h3>
-                              {news.featured && (
-                                <StarIcon className="w-5 h-5 text-yellow-500 flex-shrink-0 ml-2" />
-                              )}
-                            </div>
-                            <p className="text-gray-600 mb-4 hyphens-auto break-words">{news.summary}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
-                                <span className="flex-shrink-0">{formatDate(news.publishDate)}</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {news.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                                    <span key={tagIndex} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hyphens-auto break-words">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              <button 
-                                onClick={() => router.push(`/kaynaklar/haber/${news.id}`)}
-                                className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center space-x-1 flex-shrink-0 ml-4"
-                              >
-                                <span>Devamını Oku</span>
-                                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      ))
-                    ) : (
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <NewspaperIcon className="w-8 h-8 text-blue-600" />
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Yeni içeriklerimiz çok yakında yayında...</h3>
-                        <p className="text-gray-500">Şirket haberlerimizi takip etmek için sayfayı ziyaret etmeye devam edin.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              {/* Sektör Güncel */}
-              <section id="sektor-guncel" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                      <ArrowTrendingUpIcon className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 hyphens-auto break-words">Sektör Güncel</h2>
-                      <p className="text-gray-600 hyphens-auto break-words">Analitik sektör trendleri ve gelişmeleri</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {newsData.filter(news => news.category === 'sektor-guncel').length > 0 ? (
-                      newsData.filter(news => news.category === 'sektor-guncel').map((news, index) => (
-                        <article key={index} className="flex flex-col md:flex-row gap-6 p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                          <img 
-                            src={news.imageUrl} 
-                            alt={news.title}
-                            className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-3">
-                              <h3 className="font-semibold text-gray-900 text-lg hyphens-auto break-words">{news.title}</h3>
-                              {news.featured && (
-                                <StarIcon className="w-5 h-5 text-yellow-500 flex-shrink-0 ml-2" />
-                              )}
-                            </div>
-                            <p className="text-gray-600 mb-4 hyphens-auto break-words">{news.summary}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
-                                <span className="flex-shrink-0">{formatDate(news.publishDate)}</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {news.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                                    <span key={tagIndex} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hyphens-auto break-words">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              <button 
-                                onClick={() => router.push(`/kaynaklar/haber/${news.id}`)}
-                                className="text-green-600 hover:text-green-800 font-medium text-sm flex items-center space-x-1 flex-shrink-0 ml-4"
-                              >
-                                <span>Devamını Oku</span>
-                                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      ))
-                    ) : (
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <ArrowTrendingUpIcon className="w-8 h-8 text-green-600" />
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Yeni içeriklerimiz çok yakında yayında...</h3>
-                        <p className="text-gray-500">Sektör güncellemelerini takip etmek için sayfayı ziyaret etmeye devam edin.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              {/* Etkinlik Takvimi */}
-              <section id="etkinlik-takvimi" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <CalendarDaysIcon className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 hyphens-auto break-words">Etkinlik Takvimi</h2>
-                      <p className="text-gray-600 hyphens-auto break-words">Fuar, seminer ve etkinlik duyuruları</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {eventsData.length > 0 ? (
-                      eventsData.map((event, index) => (
-                        <div key={index} className="p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                          <div className="flex flex-col md:flex-row gap-6">
-                            <img 
-                              src={event.imageUrl} 
-                              alt={event.title}
-                              className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between mb-3">
-                                <div className="min-w-0 flex-1">
-                                  <h3 className="font-semibold text-gray-900 text-lg mb-1 hyphens-auto break-words">{event.title}</h3>
-                                  <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded uppercase font-medium">
-                                    {event.eventType}
-                                  </span>
-                                </div>
-                                {event.featured && (
-                                  <StarIcon className="w-5 h-5 text-yellow-500 flex-shrink-0 ml-2" />
-                                )}
-                              </div>
-                              <p className="text-gray-600 mb-4 hyphens-auto break-words">{event.description}</p>
-                              <div className="flex items-center justify-between">
-                                <div className="space-y-1 text-sm text-gray-500 min-w-0 flex-1">
-                                  <div className="flex items-center space-x-2">
-                                    <CalendarDaysIcon className="w-4 h-4 flex-shrink-0" />
-                                    <span className="hyphens-auto break-words">
-                                      {formatDate(event.startDate)}
-                                      {event.endDate && ` - ${formatDate(event.endDate)}`}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <BuildingOffice2Icon className="w-4 h-4 flex-shrink-0" />
-                                    <span className="hyphens-auto break-words">{event.location}</span>
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
-                                  <button 
-                                    onClick={() => router.push(`/kaynaklar/etkinlik/${event.id}`)}
-                                    className="text-purple-600 hover:text-purple-800 font-medium text-sm flex items-center space-x-1"
-                                  >
-                                    <span>Detaylar</span>
-                                    <EyeIcon className="w-4 h-4" />
-                                  </button>
-                                  {event.registrationUrl && (
-                                    <a 
-                                      href={event.registrationUrl}
-                                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
-                                    >
-                                      Kayıt Ol
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <CalendarDaysIcon className="w-8 h-8 text-purple-600" />
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Yeni içeriklerimiz çok yakında yayında...</h3>
-                        <p className="text-gray-500">Etkinlik duyurularımızı takip etmek için sayfayı ziyaret etmeye devam edin.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              {/* Başarı Hikayeleri */}
-              <section id="basari-hikayeleri" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                      <TrophyIcon className="w-6 h-6 text-yellow-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 hyphens-auto break-words">Başarı Hikayeleri</h2>
-                      <p className="text-gray-600 hyphens-auto break-words">Müşteri başarı hikayeleri ve case studyler</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {newsData.filter(news => news.category === 'basari-hikayeleri').map((story, index) => (
-                      <article key={index} className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl">
-                        <div className="flex flex-col md:flex-row gap-6">
-                          <img 
-                            src={story.imageUrl} 
-                            alt={story.title}
-                            className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-gray-900 text-lg mb-3 hyphens-auto break-words">{story.title}</h3>
-                            <p className="text-gray-600 mb-4 hyphens-auto break-words">{story.summary}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 min-w-0">
-                                <span className="flex-shrink-0">{formatDate(story.publishDate)}</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {story.tags.slice(0, 3).map((tag: string, tagIndex: number) => (
-                                    <span key={tagIndex} className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs hyphens-auto break-words">
-                                      {tag}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              <button 
-                                onClick={() => router.push(`/kaynaklar/haber/${story.id}`)}
-                                className="text-yellow-600 hover:text-yellow-800 font-medium text-sm flex items-center space-x-1 flex-shrink-0 ml-4"
-                              >
-                                <span className="whitespace-nowrap">Case Study İncele</span>
-                                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
               {/* Ürün Kataloğu */}
-              <section id="urun-katalogu" className="scroll-mt-28">
+              <section id="urun-katalogu" className="space-y-12 scroll-mt-24">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                   <div className="flex items-center space-x-4 mb-6">
                     <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -512,7 +198,7 @@ export default function KaynaklarPage() {
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900 hyphens-auto break-words">Ürün Kataloğu</h2>
-                                              <p className="text-gray-600 hyphens-auto break-words">Tüm ürünlerimizin detaylı kataloğu</p>
+                      <p className="text-gray-600 hyphens-auto break-words">Tüm ürünlerimizin detaylı kataloğu</p>
                     </div>
                   </div>
                   
