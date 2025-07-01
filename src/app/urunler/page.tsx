@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { BeakerIcon, CubeIcon, WrenchIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
