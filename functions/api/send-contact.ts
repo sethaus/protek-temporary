@@ -1,6 +1,26 @@
+import type { PagesFunction } from '@cloudflare/workers-types';
 import nodemailer from 'nodemailer';
 
 // Define the environment variables we expect
+interface FormData {
+  formType?: string;
+  type?: string;
+  subject?: string;
+  message?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  position?: string;
+  complaintType?: string;
+  complaintSubject?: string;
+  complaintDetails?: string;
+  trainingType?: string;
+  participantCount?: string;
+  preferredDate?: string;
+  additionalNotes?: string;
+}
+
 interface Env {
   GMAIL_USER: string;
   GMAIL_APP_PASSWORD: string;
@@ -36,7 +56,7 @@ const createTransporter = (env: Env) => {
 // Handle POST requests to /api/send-contact
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const body = await request.json();
+    const body = await request.json() as FormData;
     
     const formType = body.formType || body.type; // Check for 'type' from general form
 
@@ -78,7 +98,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             </div>
             <div style="margin: 20px 0;">
               <h3 style="color: #dc2626; margin-bottom: 15px;">Detaylı Açıklama</h3>
-              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">${complaintDetails.replace(/\n/g, '<br>')}</div>
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">${(complaintDetails || '').replace(/\n/g, '<br>')}</div>
             </div>
             <div style="margin: 20px 0;">
               <h3 style="color: #dc2626; margin-bottom: 15px;">İletişim Bilgileri</h3>
@@ -134,7 +154,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
             ${subject ? `<div style="margin: 20px 0;"><h3 style="color: #3b82f6; margin-bottom: 15px;">Konu</h3><div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">${subject}</div></div>` : ''}
             <div style="margin: 20px 0;">
               <h3 style="color: #3b82f6; margin-bottom: 15px;">Mesaj</h3>
-              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">${message.replace(/\n/g, '<br>')}</div>
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">${(message || '').replace(/\n/g, '<br>')}</div>
             </div>
             <div style="margin: 20px 0;">
               <h3 style="color: #3b82f6; margin-bottom: 15px;">İletişim Bilgileri</h3>

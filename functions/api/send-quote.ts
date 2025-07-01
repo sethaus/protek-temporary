@@ -1,6 +1,11 @@
+import type { PagesFunction } from '@cloudflare/workers-types';
 import nodemailer from 'nodemailer';
 
 // Define the environment variables we expect
+interface FormData {
+  [key: string]: any; // Allow any string key
+}
+
 interface Env {
   GMAIL_USER: string;
   GMAIL_APP_PASSWORD: string;
@@ -39,7 +44,7 @@ const createTransporter = (env: Env) => {
 // Handle POST requests to /api/send-quote
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const body = await request.json();
+    const body: FormData = await request.json();
     
     const {
       quoteType,
