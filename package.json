@@ -37,6 +37,7 @@
     "node": "18.x || 20.x || 22.x"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250701.0",
     "@types/nodemailer": "^6.4.17"
   }
 }
