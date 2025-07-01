@@ -107,11 +107,6 @@ const timelineOptions = [
   'Henüz belirlemedim'
 ]
 
-interface ApiResponse {
-  success: boolean;
-  message: string;
-}
-
 export default function QuotePage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -176,7 +171,7 @@ export default function QuotePage() {
         body: JSON.stringify(formData)
       })
       
-      const result: ApiResponse = await response.json()
+      const result = await response.json()
       
       if (result.success) {
         setSubmitMessage('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')

@@ -5,11 +5,6 @@ import { useInView } from 'react-intersection-observer'
 import { PhoneIcon, EnvelopeIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
-interface ApiResponse {
-  success: boolean;
-  message: string;
-}
-
 export default function Contact() {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -47,12 +42,11 @@ export default function Contact() {
         }),
       })
 
-      const result: ApiResponse = await response.json();
-      if (result.success) {
-        setSubmitMessage(result.message || 'Mesajınız başarıyla gönderildi!');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+      if (response.ok) {
+        setSubmitMessage('Mesajınız başarıyla gönderildi!')
+        setFormData({ name: '', email: '', subject: '', message: '' })
       } else {
-        setSubmitMessage(result.message || 'Mesaj gönderilirken bir hata oluştu.');
+        setSubmitMessage('Mesaj gönderilirken bir hata oluştu.')
       }
     } catch (error) {
       console.error('Form gönderim hatası:', error)

@@ -58,11 +58,6 @@ const generateProductUrl = (product: any) => {
   return `/urunler/laboratuvar-ekipmanlari/test-sistemleri/${product.id}`
 }
 
-interface ApiResponse {
-  success: boolean;
-  data: any[];
-}
-
 export default function Products() {
   const [selected, setSelected] = useState('all')
   const [selectedSub, setSelectedSub] = useState<string | null>(null)
@@ -75,7 +70,7 @@ export default function Products() {
     try {
       setLoading(true)
       const response = await fetch('/api/products')
-      const data: ApiResponse = await response.json()
+      const data = await response.json()
       
       if (data.success && Array.isArray(data.data)) {
         setProducts(data.data)

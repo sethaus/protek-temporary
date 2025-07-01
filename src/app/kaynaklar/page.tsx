@@ -59,10 +59,6 @@ const sections = {
   ]
 }
 
-interface ApiResponse<T> {
-  data: T[];
-}
-
 export default function KaynaklarPage() {
   const [activeSection, setActiveSection] = useState('sirket-haberleri')
   const [newsData, setNewsData] = useState<any[]>([])
@@ -78,8 +74,8 @@ export default function KaynaklarPage() {
           fetch('/api/news'),
           fetch('/api/events')
         ])
-        const newsResult: ApiResponse<any> = await newsRes.json()
-        const eventsResult: ApiResponse<any> = await eventsRes.json()
+        const newsResult = await newsRes.json()
+        const eventsResult = await eventsRes.json()
         
         setNewsData(newsResult.data || [])
         setEventsData(eventsResult.data || [])
