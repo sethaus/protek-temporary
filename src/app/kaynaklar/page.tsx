@@ -59,6 +59,10 @@ const sections = {
   ]
 }
 
+interface ApiResponse<T> {
+  data: T[];
+}
+
 export default function KaynaklarPage() {
   const [activeSection, setActiveSection] = useState('sirket-haberleri')
   const [newsData, setNewsData] = useState<any[]>([])
@@ -70,12 +74,10 @@ export default function KaynaklarPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsRes, eventsRes] = await Promise.all([
-          fetch('/api/news'),
-          fetch('/api/events')
-        ])
-        const newsResult = await newsRes.json()
-        const eventsResult = await eventsRes.json()
+        const newsRes = await fetch('/api/news')
+        const eventsRes = await fetch('/api/events')
+        const newsResult: ApiResponse<any> = await newsRes.json()
+        const eventsResult: ApiResponse<any> = await eventsRes.json()
         
         setNewsData(newsResult.data || [])
         setEventsData(eventsResult.data || [])
