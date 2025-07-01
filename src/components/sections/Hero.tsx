@@ -186,7 +186,7 @@ export default function Hero() {
               </h1>
               
               <p className="text-body text-neutral-600 max-w-lg">
-                Laboratuvar teknolojilerinde 20+ yıllık deneyimimizle, güvenilir analiz cihazları, 
+                Laboratuvar teknolojilerinde 25+ yıllık deneyimimizle, güvenilir analiz cihazları, 
                 otomasyon sistemleri ve anahtar teslim laboratuvar kurulum hizmetleri sunuyoruz.
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function Hero() {
               <button 
                 className="btn-outline px-5 py-2.5 group"
                 onClick={() => {
-                  const videoSection = document.getElementById('tanitim-videosu');
+                  const videoSection = document.getElementById('protek-hakkinda');
                   if (videoSection) {
                     videoSection.scrollIntoView({ 
                       behavior: 'smooth',
@@ -233,7 +233,7 @@ export default function Hero() {
                 <div className="text-caption text-neutral-600">Tamamlanan Proje</div>
               </div>
               <div>
-                <div className="text-xl lg:text-2xl font-bold text-secondary-600">20+</div>
+                <div className="text-xl lg:text-2xl font-bold text-secondary-600">25+</div>
                 <div className="text-caption text-neutral-600">Yıllık Deneyim</div>
               </div>
               <div>

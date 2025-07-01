@@ -7,15 +7,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "build:check": "npm run type-check && npm run lint && npm run build",
+    "preview": "npm run build && npm start"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "@libsql/client": "^0.15.9",
-    "airtable": "^0.12.2",
+    "@types/nodemailer": "^6.4.17",
     "dotenv": "^16.5.0",
     "framer-motion": "^10.16.0",
     "next": "14.0.4",
+    "nodemailer": "^7.0.4",
     "react": "^18",
     "react-dom": "^18",
     "react-intersection-observer": "^9.5.0"

@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Cloudflare Pages için optimize edilmiş ayarlar
+  output: 'standalone',
+  trailingSlash: false,
+  
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -10,12 +18,21 @@ const nextConfig = {
       }
     ],
     formats: ['image/webp', 'image/avif'],
+    // Cloudflare Pages için unoptimized images
+    unoptimized: process.env.NODE_ENV === 'production',
   },
+  
+  // Build optimizasyonları
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Production'da type check yapalım
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Production'da lint check yapalım
+  },
+  
+  // Experimental özellikler
+  experimental: {
+    serverComponentsExternalPackages: ['resend'],
   },
   async headers() {
     return [

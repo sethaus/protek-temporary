@@ -52,7 +52,7 @@ const features = [
   },
   {
     icon: TrophyIcon,
-    title: '20+ Yıl Deneyim',
+    title: '25+ Yıl Deneyim',
     description: 'Sektördeki köklü deneyimimiz güvencesinde',
     color: 'from-yellow-500 to-orange-500'
   },

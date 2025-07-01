@@ -594,11 +594,11 @@ export default function EndustriyelLaboratuvarPage() {
                 </a>
                 
                 <a
-                  href="tel:+902123456789"
+                  href="tel:+902163293960"
                   className="bg-white/10 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-bold text-lg border border-white/20 hover:bg-white/20 transition-all duration-300 flex items-center gap-3 group"
                 >
                   <PhoneIcon className="w-6 h-6" />
-                  +90 212 345 67 89
+                  +90 (216) 329 39 60 Pbx
                 </a>
               </div>
 

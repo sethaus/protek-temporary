@@ -2,11 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useState } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ChevronRightIcon, HomeIcon, BeakerIcon, CubeIcon, WrenchIcon, FlagIcon, FunnelIcon } from '@heroicons/react/24/outline'
-import { productCategories, getProductsBySubcategory } from '@/data/products'
+import { ChevronRightIcon, HomeIcon, BeakerIcon, CubeIcon, WrenchIcon } from '@heroicons/react/24/outline'
+import { productCategories } from '@/data/products'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -24,7 +23,6 @@ interface SubcategoryPageProps {
 }
 
 export default function SubcategoryPage({ params }: SubcategoryPageProps) {
-  const [sortBy, setSortBy] = useState<'name' | 'applications'>('name')
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
@@ -39,15 +37,6 @@ export default function SubcategoryPage({ params }: SubcategoryPageProps) {
   if (!category || !subcategory) {
     notFound()
   }
-
-  // Ürünleri sırala
-  const sortedProducts = [...subcategory.products].sort((a, b) => {
-    if (sortBy === 'name') {
-      return a.name.localeCompare(b.name, 'tr', { sensitivity: 'base' })
-    } else {
-      return a.applications.length - b.applications.length
-    }
-  })
 
   const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BeakerIcon
 
@@ -96,161 +85,39 @@ export default function SubcategoryPage({ params }: SubcategoryPageProps) {
               <p className="text-lg lg:text-xl text-primary-100 max-w-3xl mx-auto">
                 {subcategory.description}
               </p>
-              <div className="text-primary-100">
-                <span className="text-2xl font-bold text-white">{subcategory.products.length}</span> ürün bulundu
-              </div>
+
             </motion.div>
           </div>
         </section>
 
-        {/* Filtre ve Sıralama */}
-        <section className="py-6 bg-white border-b">
+
+
+        {/* Geçici Mesaj - Ürünler Hazırlanıyor */}
+        <section className="py-16">
           <div className="container-custom">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="text-sm text-neutral-600">
-                <span className="font-medium text-neutral-800">{subcategory.products.length}</span> ürün listeleniyor
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center py-16"
+            >
+              <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <IconComponent className="w-12 h-12 text-neutral-400" />
               </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <FunnelIcon className="w-4 h-4 text-neutral-500" />
-                  <span className="text-sm text-neutral-600">Sırala:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as 'name' | 'applications')}
-                    className="text-sm border border-neutral-300 rounded-lg px-3 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  >
-                    <option value="name">İsme Göre (A-Z)</option>
-                    <option value="applications">Uygulama Sayısına Göre</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Ürün Listesi */}
-        <section ref={ref} className="py-16">
-          <div className="container-custom">
-            {sortedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {sortedProducts.map((product, index) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <Link href={`/urunler/${category.key}/${params.subcategory}/${product.id}`}>
-                      <div className="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
-                        <div className="relative">
-                          {/* Ürün Resmi */}
-                          <div className="relative h-48 bg-gradient-to-br from-primary-50 to-secondary-50 overflow-hidden">
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                            <button className="absolute top-3 right-3 p-2 bg-white/80 hover:bg-white rounded-full transition-colors">
-                              <FlagIcon className="w-5 h-5 text-neutral-400 hover:text-primary-500 transition-colors" />
-                            </button>
-                          </div>
-
-                          {/* Ürün Bilgileri */}
-                          <div className="p-6">
-                            <h3 className="text-lg font-bold text-neutral-800 mb-3 group-hover:text-primary-600 transition-colors">
-                              {product.name}
-                            </h3>
-                            <p className="text-neutral-600 text-sm mb-4 line-clamp-3">
-                              {product.description}
-                            </p>
-
-                            {/* Özellikler */}
-                            <div className="space-y-2 mb-4">
-                              <h4 className="text-xs font-semibold text-neutral-700 uppercase tracking-wide">
-                                Öne Çıkan Özellikler
-                              </h4>
-                              {product.features.slice(0, 3).map((feature, idx) => (
-                                <div key={idx} className="flex items-center text-xs text-neutral-500">
-                                  <div className="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 flex-shrink-0"></div>
-                                  <span className="line-clamp-1">{feature}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Uygulama Alanları */}
-                            <div className="mb-4">
-                              <h4 className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-2">
-                                Uygulama Alanları
-                              </h4>
-                              <div className="flex flex-wrap gap-1">
-                                {product.applications.slice(0, 3).map((app, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded-full"
-                                  >
-                                    {app}
-                                  </span>
-                                ))}
-                                {product.applications.length > 3 && (
-                                  <span className="px-2 py-1 bg-primary-100 text-primary-600 text-xs rounded-full">
-                                    +{product.applications.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Teknik Özellikler Önizleme */}
-                            {product.specifications && Object.keys(product.specifications).length > 0 && (
-                              <div className="mb-4">
-                                <h4 className="text-xs font-semibold text-neutral-700 uppercase tracking-wide mb-2">
-                                  Teknik Özellikler
-                                </h4>
-                                <div className="text-xs text-neutral-500 space-y-1">
-                                  {Object.entries(product.specifications).slice(0, 2).map(([key, value]) => (
-                                    <div key={key} className="flex justify-between">
-                                      <span className="font-medium">{key}:</span>
-                                      <span>{value}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* CTA */}
-                            <div className="flex items-center justify-between pt-4 border-t border-neutral-100">
-                              <span className="text-primary-600 font-medium text-sm group-hover:text-primary-700 transition-colors">
-                                Detayları Gör
-                              </span>
-                              <ChevronRightIcon className="w-4 h-4 text-primary-600 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <BeakerIcon className="w-12 h-12 text-neutral-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-neutral-800 mb-2">
-                  Bu alt kategoride ürün bulunamadı
-                </h3>
-                <p className="text-neutral-600 mb-6">
-                  Yakında yeni ürünler eklenecektir.
-                </p>
-                <Link
-                  href={`/urunler/${category.key}`}
-                  className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Kategoriye Geri Dön
-                  <ChevronRightIcon className="w-4 h-4 ml-2" />
-                </Link>
-              </div>
-            )}
+              <h3 className="text-xl font-semibold text-neutral-800 mb-2">
+                {subcategory.name} Ürünleri
+              </h3>
+              <p className="text-center text-gray-600 mt-4 text-lg">
+                Hazırlık aşamasında, yakında tüm ürünlerimizle burada olacağız.
+              </p>
+              <Link
+                href={`/urunler/${category.key}`}
+                className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mt-6"
+              >
+                Kategoriye Geri Dön
+                <ChevronRightIcon className="w-4 h-4 ml-2" />
+              </Link>
+            </motion.div>
           </div>
         </section>
 
@@ -278,8 +145,7 @@ export default function SubcategoryPage({ params }: SubcategoryPageProps) {
                       <p className="text-sm text-neutral-600 mb-4 line-clamp-2">
                         {sub.description}
                       </p>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-neutral-500">{sub.products.length} ürün</span>
+                      <div className="flex items-center justify-end text-sm">
                         <ChevronRightIcon className="w-4 h-4 text-primary-600 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>

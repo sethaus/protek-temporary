@@ -55,7 +55,6 @@ const sections = {
   ],
   "Özel Projeler": [
     { id: "ozel-cihaz-tasarimi", name: "Özel Cihaz Tasarımı", icon: CubeIcon },
-    { id: "yazilim-cozumleri", name: "Yazılım Çözümleri", icon: Squares2X2Icon },
     { id: "sistem-entegrasyonu", name: "Sistem Entegrasyonu", icon: ArrowTrendingUpIcon }
   ]
 }
@@ -907,84 +906,6 @@ export default function CozumlerPage() {
                           <p className="text-amber-700 text-xs">Seri Üretim</p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Yazılım Çözümleri */}
-              <section id="yazilim-cozumleri" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-                      <Squares2X2Icon className="w-6 h-6 text-teal-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Yazılım Çözümleri</h2>
-                      <p className="text-gray-600">LIMS ve veri yönetim yazılım çözümleri</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">LIMS (Laboratory Information Management System)</h3>
-                      <p className="text-gray-700 mb-4">
-                        Laboratuvar süreçlerinizi dijitalleştirin, veri bütünlüğünü sağlayın ve 
-                        operasyonel verimliliği artırın.
-                      </p>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-teal-500" />
-                          <span className="text-sm">Numune takip sistemi</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-teal-500" />
-                          <span className="text-sm">Test sonuçları yönetimi</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-teal-500" />
-                          <span className="text-sm">Raporlama ve analiz</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-teal-500" />
-                          <span className="text-sm">Kalite kontrol modülleri</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Veri Yönetimi</h3>
-                      <div className="bg-teal-50 rounded-xl p-6 border border-teal-200">
-                        <h4 className="font-semibold text-teal-900 mb-3">Güvenli Veri Saklama</h4>
-                        <div className="space-y-2 text-teal-700 text-sm">
-                          <p>🔒 Şifreli veri saklama</p>
-                          <p>📊 Gerçek zamanlı dashboard</p>
-                          <p>📈 Trend analizi ve raporlama</p>
-                          <p>☁️ Bulut tabanlı erişim</p>
-                          <p>🔄 Otomatik yedekleme</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gray-50 rounded-lg text-center">
-                      <ComputerDesktopIcon className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                      <h4 className="font-medium text-gray-900">Web Tabanlı</h4>
-                      <p className="text-gray-600 text-sm">Herhangi bir cihazdan erişim</p>
-                    </div>
-                    
-                    <div className="p-4 bg-gray-50 rounded-lg text-center">
-                      <UsersIcon className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                      <h4 className="font-medium text-gray-900">Çoklu Kullanıcı</h4>
-                      <p className="text-gray-600 text-sm">Rol tabanlı yetkilendirme</p>
-                    </div>
-                    
-                    <div className="p-4 bg-gray-50 rounded-lg text-center">
-                      <PuzzlePieceIcon className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                      <h4 className="font-medium text-gray-900">Entegrasyon</h4>
-                      <p className="text-gray-600 text-sm">Mevcut sistemlerle uyum</p>
                     </div>
                   </div>
                 </div>

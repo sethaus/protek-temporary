@@ -1,0 +1,14 @@
+# Cloudflare Pages Configuration
+name = "protekanalitik-com"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "npm run build"
+cwd = "."
+
+[build.environment_variables]
+NODE_VERSION = "20"
+NPM_VERSION = "10"
+
+# Environment variables (production'da Cloudflare dashboard'dan ayarlanacak)
+# RESEND_API_KEY = "your-resend-api-key"

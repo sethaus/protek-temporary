@@ -158,7 +158,7 @@ export default function Footer() {
                   height={40}
                 />
                 <p className="text-slate-400 text-sm leading-relaxed">
-                  Laboratuvar teknolojilerinde 20+ yıllık deneyimimizle, güvenilir analiz 
+                  Laboratuvar teknolojilerinde 25+ yıllık deneyimimizle, güvenilir analiz 
                   cihazları, otomasyon sistemleri ve anahtar teslim çözümler sunuyoruz.
                 </p>
               </div>

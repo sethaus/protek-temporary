@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { 
@@ -22,7 +22,7 @@ import {
   ShieldCheckIcon,
   ChatBubbleLeftEllipsisIcon
 } from '@heroicons/react/24/outline'
-import { productCategories, type Product } from '@/data/products'
+import { productCategories, getProductById, type Product } from '@/data/products'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
@@ -45,40 +45,17 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [ref, inView] = useInView({
     threshold: 0.1,
     triggerOnce: true,
   })
 
-  const fetchProduct = useCallback(async () => {
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/products/${params.product}`)
-      const result = await response.json()
-      
-      if (result.success) {
-        setProduct(result.data)
-        
-        // İlgili ürünleri getir
-        const relatedResponse = await fetch(`/api/products?category=${params.category}&subcategory=${params.subcategory}&limit=4&exclude=${params.product}`)
-        if (relatedResponse.ok) {
-          const relatedResult = await relatedResponse.json()
-          if (relatedResult.success && Array.isArray(relatedResult.data)) {
-            setRelatedProducts(relatedResult.data.slice(0, 4))
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Ürün yükleme hatası:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [params.product, params.category, params.subcategory])
-
   useEffect(() => {
-    fetchProduct()
-  }, [fetchProduct])
+    // Statik veriden ürünü bul
+    const foundProduct = getProductById(params.product)
+    setProduct(foundProduct)
+    setLoading(false)
+  }, [params.product])
 
   if (loading) {
     return (
@@ -499,50 +476,20 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         </section>
 
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <section className="py-16 bg-neutral-50">
-            <div className="container-custom">
-              <h2 className="text-2xl lg:text-3xl font-bold text-neutral-800 mb-8 text-center">
-                Benzer Ürünler
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {relatedProducts.map((relatedProduct, index) => (
-                  <motion.div
-                    key={relatedProduct.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <Link href={`/urunler/${params.category}/${params.subcategory}/${relatedProduct.id}`}>
-                      <div className="group bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-2">
-                        <div className="relative h-48 bg-gradient-to-br from-primary-50 to-secondary-50 overflow-hidden">
-                          <img
-                            src={relatedProduct.image}
-                            alt={relatedProduct.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <h3 className="text-lg font-bold text-neutral-800 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
-                            {relatedProduct.name}
-                          </h3>
-                          <p className="text-neutral-600 text-sm mb-4 line-clamp-2">
-                            {relatedProduct.description}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-primary-600 font-medium text-sm">Detayları Gör</span>
-                            <ChevronRightIcon className="w-4 h-4 text-primary-600 group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Temporary Message for Product Content */}
+        <section className="py-16 bg-neutral-50">
+          <div className="container-custom">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="text-center text-gray-600 mt-10 text-lg">
+                Hazırlık aşamasında, yakında tüm ürünlerimizle burada olacağız.
+              </p>
+            </motion.div>
+          </div>
+        </section>
 
         {/* Enhanced CTA Section */}
         <section className="py-16 bg-gradient-to-r from-primary-600 to-primary-700">

@@ -225,12 +225,6 @@ const navigation: NavigationItem[] = [
               icon: DocumentTextIcon
             },
             { 
-              name: 'Yönetim Kadrosu', 
-              href: '/hakkimizda#yonetim', 
-              description: 'Deneyimli yönetim ekibimiz', 
-              icon: UserGroupIcon
-            },
-            { 
               name: 'Organizasyon Şeması', 
               href: '/hakkimizda#organizasyon', 
               description: 'Şirket yapısı ve departmanlarımız', 
@@ -398,12 +392,6 @@ const navigation: NavigationItem[] = [
               href: '/cozumler#ozel-cihaz-tasarimi', 
               description: 'İhtiyaca özel analitik cihaz tasarım ve üretimi', 
               icon: CubeIcon
-            },
-            { 
-              name: 'Yazılım Çözümleri', 
-              href: '/cozumler#yazilim-cozumleri', 
-              description: 'LIMS ve veri yönetim yazılım çözümleri', 
-              icon: Squares2X2Icon
             },
             { 
               name: 'Sistem Entegrasyonu', 
@@ -717,22 +705,10 @@ const navigation: NavigationItem[] = [
               icon: BookOpenIcon
             },
             { 
-              name: 'Teknik Kılavuzlar', 
-              href: '/kaynaklar#teknik-kilavuzlar', 
-              description: 'Cihaz kullanım ve bakım kılavuzları', 
-              icon: DocumentTextIcon
-            },
-            { 
               name: 'Metod Örnekleri', 
               href: '/kaynaklar#metod-ornekleri', 
               description: 'Analiz metod örnekleri ve uygulamaları', 
               icon: ClipboardDocumentCheckIcon
-            },
-            { 
-              name: 'Veri Sayfaları', 
-              href: '/kaynaklar#veri-sayfalari', 
-              description: 'Ürün teknik veri sayfaları', 
-              icon: DocumentArrowDownIcon
             }
           ]
         },
@@ -742,18 +718,6 @@ const navigation: NavigationItem[] = [
           color: 'secondary',
           description: 'Eğitim materyalleri ve destek hizmetleri',
           links: [
-            { 
-              name: 'Video Eğitimler', 
-              href: '/kaynaklar#video-egitimler', 
-              description: 'Cihaz kullanımı video eğitim serileri', 
-              icon: VideoCameraIcon
-            },
-            { 
-              name: 'Webinarlar', 
-              href: '/kaynaklar#webinarlar', 
-              description: 'Canlı eğitim oturumları ve kayıtları', 
-              icon: AcademicCapIcon
-            },
             { 
               name: 'FAQ', 
               href: '/kaynaklar#sss', 

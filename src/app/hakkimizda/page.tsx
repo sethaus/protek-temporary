@@ -7,7 +7,6 @@ import Footer from '@/components/layout/Footer'
 import { 
   BuildingOffice2Icon,
   DocumentTextIcon,
-  UserGroupIcon,
   Squares2X2Icon,
   TrophyIcon,
   ShieldCheckIcon,
@@ -36,7 +35,6 @@ const sections = {
   "Şirket Bilgileri": [
     { id: "sirketimiz", name: "Şirketimiz", icon: BuildingOffice2Icon },
     { id: "tarihcemiz", name: "Tarihçemiz", icon: DocumentTextIcon },
-    { id: "yonetim", name: "Yönetim Kadrosu", icon: UserGroupIcon },
     { id: "organizasyon", name: "Organizasyon Şeması", icon: Squares2X2Icon }
   ],
   "Kalite ve Sertifikalar": [
@@ -166,9 +164,9 @@ export default function HakkimizdaPage() {
                   <div className="mt-6 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
                     <h4 className="font-semibold mb-4">Hızlı İletişim</h4>
                     <div className="space-y-3">
-                      <a href="tel:+902121234567" className="flex items-center space-x-3 text-blue-100 hover:text-white transition-colors">
+                      <a href="tel:+902163293960" className="flex items-center space-x-3 text-blue-100 hover:text-white transition-colors">
                         <PhoneIcon className="w-5 h-5" />
-                        <span>+90 (212) 123 45 67</span>
+                        <span>+90 (216) 329 39 60</span>
                       </a>
                       <a href="mailto:info@protekanalitik.com" className="flex items-center space-x-3 text-blue-100 hover:text-white transition-colors">
                         <EnvelopeIcon className="w-5 h-5" />
@@ -332,50 +330,6 @@ export default function HakkimizdaPage() {
                           <p className="text-sm text-gray-600 leading-relaxed">Türkiye&rsquo;nin önde gelen laboratuvar teknolojileri şirketlerinden biri olarak sektörde liderliğe ulaştık.</p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* Yönetim Kadrosu */}
-              <section id="yonetim" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <UserGroupIcon className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Yönetim Kadrosu</h2>
-                      <p className="text-gray-600">Deneyimli liderlik ekibimiz</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="text-center p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white font-semibold text-xl">AK</span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Ahmet Kaya</h3>
-                      <p className="text-sm text-gray-500 mb-2">Genel Müdür</p>
-                      <p className="text-xs text-gray-600">25 yıllık sektör deneyimi</p>
-                    </div>
-                    
-                    <div className="text-center p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                      <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white font-semibold text-xl">SY</span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Selin Yılmaz</h3>
-                      <p className="text-sm text-gray-500 mb-2">Teknik Müdür</p>
-                      <p className="text-xs text-gray-600">15 yıllık Ar-Ge deneyimi</p>
-                    </div>
-                    
-                    <div className="text-center p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
-                      <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-white font-semibold text-xl">MÖ</span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Murat Özkan</h3>
-                      <p className="text-sm text-gray-500 mb-2">Satış Müdürü</p>
-                      <p className="text-xs text-gray-600">20 yıllık satış deneyimi</p>
                     </div>
                   </div>
                 </div>
@@ -662,7 +616,7 @@ export default function HakkimizdaPage() {
                           <span className="text-sm">Ekipman desteği</span>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <UserGroupIcon className="w-5 h-5 text-blue-500" />
+                          <UserIcon className="w-5 h-5 text-blue-500" />
                           <span className="text-sm">Uzman danışmanlık</span>
                         </div>
                       </div>

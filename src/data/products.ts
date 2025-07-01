@@ -15,6 +15,7 @@ export interface Product {
   isWarrantied?: boolean
   hasFreeShipping?: boolean
   catalogFiles?: string[]
+  status?: 'draft' | 'published'  // Status for content readiness
   created_at: string
   updated_at?: string  // Added field for last update timestamp
 }

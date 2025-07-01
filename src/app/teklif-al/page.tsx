@@ -109,6 +109,8 @@ const timelineOptions = [
 
 export default function QuotePage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
   const [formData, setFormData] = useState<FormData>({
     quoteType: '',
     category: '',
@@ -156,9 +158,49 @@ export default function QuotePage() {
     }
   }
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData)
-    alert('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    setSubmitMessage('')
+    
+    try {
+      const response = await fetch('/api/send-quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setSubmitMessage('Teklifiniz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+        // Formu sıfırla
+        setFormData({
+          quoteType: '',
+          category: '',
+          subcategory: '',
+          customRequirement: '',
+          projectDetails: '',
+          budget: '',
+          timeline: '',
+          companyName: '',
+          contactPerson: '',
+          email: '',
+          phone: '',
+          position: '',
+          files: []
+        })
+        setCurrentStep(1)
+      } else {
+        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+      }
+    } catch (error) {
+      console.error('Form gönderme hatası:', error)
+      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const renderStep1 = () => (
@@ -560,6 +602,26 @@ export default function QuotePage() {
             </div>
           </div>
 
+          {/* Success/Error Message */}
+          {submitMessage && (
+            <div className={`max-w-4xl mx-auto mb-6 p-4 rounded-xl border ${
+              submitMessage.includes('başarıyla') 
+                ? 'bg-green-50 border-green-200 text-green-800' 
+                : 'bg-red-50 border-red-200 text-red-800'
+            }`}>
+              <div className="flex items-center space-x-2">
+                {submitMessage.includes('başarıyla') ? (
+                  <CheckCircleIcon className="w-5 h-5 text-green-600" />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">!</span>
+                  </div>
+                )}
+                <span className="font-medium">{submitMessage}</span>
+              </div>
+            </div>
+          )}
+
           {/* Main Content */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 lg:p-12">
@@ -608,15 +670,24 @@ export default function QuotePage() {
               ) : (
                 <button
                   onClick={handleSubmit}
-                  disabled={!isStepValid()}
+                  disabled={!isStepValid() || isSubmitting}
                   className={`flex items-center space-x-2 px-8 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    isStepValid() 
+                    isStepValid() && !isSubmitting
                       ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:from-green-700 hover:to-blue-700 shadow-lg hover:shadow-xl hover:scale-105' 
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Teklif Gönder</span>
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Gönderiliyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckIcon className="w-5 h-5" />
+                      <span>Teklif Gönder</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>

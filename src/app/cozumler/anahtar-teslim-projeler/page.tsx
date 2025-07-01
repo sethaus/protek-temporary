@@ -415,11 +415,11 @@ export default function AnahtarTeslimProjelerPage() {
                 </a>
                 
                 <a
-                  href="tel:+902123456789"
+                  href="tel:+902163293960"
                   className="bg-white/20 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-bold text-lg border border-white/30 hover:bg-white/30 transition-all duration-300 flex items-center gap-3 group"
                 >
                   <PhoneIcon className="w-6 h-6" />
-                  Hemen Ara
+                  +90 (216) 329 39 60 Pbx
                 </a>
               </div>
             </motion.div>

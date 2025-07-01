@@ -14,7 +14,7 @@ import {
   ChatBubbleLeftRightIcon,
   GlobeAltIcon,
   AcademicCapIcon,
-  TruckIcon,
+
   CogIcon,
   ClockIcon,
   CheckCircleIcon,
@@ -45,13 +45,38 @@ const contactSections: ContactSection[] = [
   { id: 'sikayet-oneriler', title: 'Şikayet ve Öneriler', icon: EnvelopeIcon, category: 'Destek Hizmetleri' },
   
   // Lojistik ve Teslimat
-  { id: 'kargo-takibi', title: 'Kargo Takibi', icon: TruckIcon, category: 'Lojistik ve Teslimat' },
-  { id: 'teslimat-noktalari', title: 'Teslimat Noktaları', icon: MapPinIcon, category: 'Lojistik ve Teslimat' },
+
+
   { id: 'kurulum-hizmetleri', title: 'Kurulum Hizmetleri', icon: CogIcon, category: 'Lojistik ve Teslimat' }
 ]
 
 export default function ContactPage() {
   const [activeSection, setActiveSection] = useState('genel-mudurluk')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
+  
+  // Form states
+  const [complaintForm, setComplaintForm] = useState({
+    complaintType: 'Şikayet',
+    complaintSubject: '',
+    complaintDetails: '',
+    name: '',
+    email: '',
+    phone: '',
+    company: ''
+  })
+  
+  const [trainingForm, setTrainingForm] = useState({
+    trainingType: 'Temel Kullanıcı Eğitimi',
+    participantCount: '',
+    preferredDate: '',
+    additionalNotes: '',
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    position: ''
+  })
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,6 +121,91 @@ export default function ContactPage() {
         top: yPosition,
         behavior: 'smooth'
       })
+    }
+  }
+
+  // Form submit handlers
+  const handleComplaintSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitMessage('')
+    
+    try {
+      const response = await fetch('/api/send-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          formType: 'complaint',
+          ...complaintForm
+        })
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setSubmitMessage('Geri bildiriminiz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+        setComplaintForm({
+          complaintType: 'Şikayet',
+          complaintSubject: '',
+          complaintDetails: '',
+          name: '',
+          email: '',
+          phone: '',
+          company: ''
+        })
+      } else {
+        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+      }
+    } catch (error) {
+      console.error('Form gönderme hatası:', error)
+      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleTrainingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitMessage('')
+    
+    try {
+      const response = await fetch('/api/send-contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          formType: 'training',
+          ...trainingForm
+        })
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setSubmitMessage('Eğitim talep formunuz başarıyla gönderildi! En kısa sürede size dönüş yapacağız.')
+        setTrainingForm({
+          trainingType: 'Temel Kullanıcı Eğitimi',
+          participantCount: '',
+          preferredDate: '',
+          additionalNotes: '',
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          position: ''
+        })
+      } else {
+        setSubmitMessage(result.message || 'Bir hata oluştu. Lütfen tekrar deneyin.')
+      }
+    } catch (error) {
+      console.error('Form gönderme hatası:', error)
+      setSubmitMessage('Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -165,7 +275,10 @@ export default function ContactPage() {
                   <div className="space-y-3">
                     <a href="tel:+902163293960" className="flex items-center space-x-3 text-blue-100 hover:text-white transition-colors">
                       <PhoneIcon className="w-5 h-5" />
-                      <span>+90 (216) 329 39 60</span>
+                      <div className="flex flex-col space-y-1">
+                        <span>+90 (216) 329 39 60 Pbx</span>
+                        <span>+90 (216) 329 37 70 Pbx</span>
+                      </div>
                     </a>
                     <a href="mailto:info@protekanalitik.com" className="flex items-center space-x-3 text-blue-100 hover:text-white transition-colors">
                       <EnvelopeIcon className="w-5 h-5" />
@@ -383,7 +496,7 @@ export default function ContactPage() {
                           <ClockIcon className="w-6 h-6 text-red-600" />
                           <div>
                             <p className="font-medium text-red-900">Acil Hat</p>
-                            <p className="text-red-700">+90 (212) 999 99 99</p>
+                            <p className="text-red-700">+90 (216) 329 39 60 Pbx</p>
                           </div>
                         </div>
                         
@@ -392,7 +505,7 @@ export default function ContactPage() {
                             <PhoneIcon className="w-5 h-5 text-gray-400" />
                             <div>
                               <p className="font-medium">Teknik Destek Hattı</p>
-                              <p className="text-gray-600">+90 (212) 123 45 68</p>
+                              <p className="text-gray-600">+90 (216) 329 37 70 Pbx</p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-3">
@@ -461,7 +574,7 @@ export default function ContactPage() {
                         <div className="flex items-center space-x-3">
                           <PhoneIcon className="w-5 h-5 text-gray-400" />
                           <div>
-                            <p className="font-medium">+90 (212) 123 45 69</p>
+                            <p className="font-medium">+90 (216) 329 39 60 Pbx</p>
                             <p className="text-sm text-gray-500">Muhasebe Departmanı</p>
                           </div>
                         </div>
@@ -745,83 +858,7 @@ export default function ContactPage() {
                 </div>
               </section>
 
-              {/* Kargo Takibi */}
-              <section id="kargo-takibi" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                      <TruckIcon className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Kargo Takibi</h2>
-                      <p className="text-gray-600">Sipariş durumu sorgulama</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Kargo Takip</h3>
-                      <div className="p-6 bg-emerald-50 rounded-xl border border-emerald-200">
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Sipariş/Takip Numarası</label>
-                            <input type="text" className="w-full p-3 border border-gray-300 rounded-lg" placeholder="ORD-2024-001 veya 1234567890" />
-                          </div>
-                          <button className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors">
-                            Kargo Durumunu Sorgula
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-6">
-                        <h4 className="font-medium text-gray-900 mb-3">Kargo Firmaları</h4>
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-3">
-                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                            <span>MNG Kargo</span>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                            <span>Yurtiçi Kargo</span>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                            <span>Aras Kargo</span>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                            <span>UPS</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Teslimat Bilgileri</h3>
-                      <div className="space-y-4">
-                        <div className="p-4 bg-blue-50 rounded-lg">
-                          <h4 className="font-medium text-blue-900 mb-2">Standart Teslimat</h4>
-                          <p className="text-sm text-blue-700">İstanbul içi 1-2 iş günü, Türkiye geneli 2-5 iş günü</p>
-                        </div>
-                        <div className="p-4 bg-orange-50 rounded-lg">
-                          <h4 className="font-medium text-orange-900 mb-2">Hızlı Teslimat</h4>
-                          <p className="text-sm text-orange-700">İstanbul içi aynı gün, diğer şehirler 1-2 iş günü</p>
-                        </div>
-                        <div className="p-4 bg-green-50 rounded-lg">
-                          <h4 className="font-medium text-green-900 mb-2">Özel Teslimat</h4>
-                          <p className="text-sm text-green-700">Hassas ekipmanlar için özel kurye ve ambalaj</p>
-                        </div>
-                      </div>
-                      
-                                                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600">
-                          <strong>Not:</strong> Kargo gönderiminde SMS/e-posta bilgilendirmesi yapılır
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+
 
               {/* Eğitim Talepleri */}
               <section id="egitim-talepleri" className="scroll-mt-28">
@@ -984,7 +1021,7 @@ export default function ContactPage() {
                       
                       <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                         <p className="text-sm text-gray-600">
-                          <strong>İletişim:</strong> Acil durumlar için +90 (212) 123 45 67 
+                          <strong>İletişim:</strong> Acil durumlar için +90 (216) 329 39 60 
                           numarasından bize ulaşabilirsiniz.
                         </p>
                       </div>
@@ -993,98 +1030,7 @@ export default function ContactPage() {
                 </div>
               </section>
 
-              {/* Teslimat Noktaları */}
-              <section id="teslimat-noktalari" className="scroll-mt-28">
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-                      <MapPinIcon className="w-6 h-6 text-teal-600" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Teslimat Noktaları</h2>
-                      <p className="text-gray-600">Türkiye geneli teslimat ağı</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {[
-                      { city: 'İstanbul', address: 'Maslak Mahallesi, Büyükdere Caddesi No:123', phone: '+90 212 123 45 67', type: 'Ana Merkez' },
-                      { city: 'Ankara', address: 'Çankaya, Atatürk Bulvarı No:45', phone: '+90 312 234 56 78', type: 'Şube' },
-                      { city: 'İzmir', address: 'Alsancak, Cumhuriyet Bulvarı No:78', phone: '+90 232 345 67 89', type: 'Şube' },
-                      { city: 'Antalya', address: 'Muratpaşa, Atatürk Caddesi No:123', phone: '+90 242 456 78 90', type: 'Bayi' },
-                      { city: 'Bursa', address: 'Osmangazi, Fethiye Caddesi No:56', phone: '+90 224 567 89 01', type: 'Bayi' },
-                      { city: 'Adana', address: 'Seyhan, İnönü Caddesi No:34', phone: '+90 322 678 90 12', type: 'Bayi' }
-                    ].map((location, index) => (
-                      <div key={index} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-semibold text-gray-900">{location.city}</h3>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            location.type === 'Ana Merkez' 
-                              ? 'bg-blue-100 text-blue-800' 
-                              : location.type === 'Şube'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {location.type}
-                          </span>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-start space-x-2">
-                            <MapPinIcon className="w-4 h-4 text-gray-400 mt-0.5" />
-                            <span className="text-sm text-gray-600">{location.address}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <PhoneIcon className="w-4 h-4 text-gray-400" />
-                            <span className="text-sm text-gray-600">{location.phone}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Teslimat Saatleri</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Pazartesi - Cuma</span>
-                          <span className="font-medium">08:00 - 18:00</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cumartesi</span>
-                          <span className="font-medium">09:00 - 15:00</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Pazar</span>
-                          <span className="text-red-500">Teslimat Yok</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-4">Özel Teslimat Hizmetleri</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                          <span className="text-sm">Hassas ekipman taşıma</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                          <span className="text-sm">Soğuk zincir teslimat</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                          <span className="text-sm">Kurulum dahil teslimat</span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                          <span className="text-sm">Randevulu teslimat</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+
 
               {/* Kurulum Hizmetleri */}
               <section id="kurulum-hizmetleri" className="scroll-mt-28">
