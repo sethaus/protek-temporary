@@ -39,10 +39,15 @@ GMAIL_APP_PASSWORD=your-16-character-app-password
 NODE_ENV=production
 ```
 
-### 4. Custom Domain (Opsiyonel)
-- Pages → Custom domains → Add custom domain
-- protekanalitik.com domain'ini ekleyin
-- DNS kayıtlarını güncelleyin
+### 4. Custom Domain Bağlama
+Proje başarıyla deploy edildikten sonra, `protekanalitik.com` domain'ini bağlamak için:
+
+1. Cloudflare Pages projenizin dashboard'una gidin ("Continue to project" butonu).
+2. **Custom domains** sekmesine tıklayın.
+3. **Set up a custom domain** butonuna basın.
+4. Alan adınız olarak `protekanalitik.com` girin ve devam edin.
+5. **DNS Onayı:** Domain'iniz zaten Cloudflare'de olduğu için, Cloudflare otomatik olarak gerekli `CNAME` kaydını oluşturmayı önerecektir. Sadece onaylamanız yeterlidir.
+6. Birkaç dakika içinde domain aktif hale gelecek ve SSL sertifikası otomatik olarak yüklenecektir.
 
 ## Build Komutları
 
