@@ -5,4 +5,3 @@ name = "protek-analitik-website"
 compatibility_date = "2024-07-01"
 
 # The output directory for the Next.js build.
-pages_build_output_dir = ".next"
