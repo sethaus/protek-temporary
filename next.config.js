@@ -4,6 +4,10 @@ const path = require('path')
 const nextConfig = {
   // Cloudflare Pages için optimize edilmiş ayarlar
   trailingSlash: false,
+  output: 'standalone',
+  
+  // Cloudflare Pages support
+  poweredByHeader: false,
   
   // Webpack configuration for path aliases
   webpack: (config) => {
