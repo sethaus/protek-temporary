@@ -6,13 +6,11 @@ const nextConfig = {
   trailingSlash: false,
   
   // Webpack configuration for path aliases
-  webpack: (config, { isServer }) => {
-    // Cloudflare Pages'deki 25MB dosya boyutu limitini aşan büyük cache dosyası sorununu çözer.
-    // Bu, cache klasörünü build sonrası silmekten daha güvenli bir yöntemdir.
-    // Sorun server-side build'de oluştuğu için sadece server için cache'i kapatıyoruz.
-    if (isServer) {
-      config.cache = false;
-    }
+  webpack: (config) => {
+    // NİHAİ ÇÖZÜM: Cloudflare 25MB limit hatasını kalıcı olarak çözmek için,
+    // hem client hem de server build'lerinde Webpack cache'ini koşulsuz olarak kapatıyoruz.
+    // Bu, '0.pack' dosyasının hiçbir şekilde oluşmamasını garanti eder.
+    config.cache = false;
 
     config.resolve.alias = {
       ...config.resolve.alias,
