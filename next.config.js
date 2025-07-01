@@ -7,11 +7,6 @@ const nextConfig = {
   
   // Webpack configuration for path aliases
   webpack: (config) => {
-    // NİHAİ ÇÖZÜM: Cloudflare 25MB limit hatasını kalıcı olarak çözmek için,
-    // hem client hem de server build'lerinde Webpack cache'ini koşulsuz olarak kapatıyoruz.
-    // Bu, '0.pack' dosyasının hiçbir şekilde oluşmamasını garanti eder.
-    config.cache = false;
-
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, 'src'),
