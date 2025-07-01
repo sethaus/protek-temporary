@@ -9,7 +9,8 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     // Cloudflare Pages'deki 25MB dosya boyutu limitini aşan büyük cache dosyası sorununu çözer.
     // Bu, cache klasörünü build sonrası silmekten daha güvenli bir yöntemdir.
-    if (!isServer) {
+    // Sorun server-side build'de oluştuğu için sadece server için cache'i kapatıyoruz.
+    if (isServer) {
       config.cache = false;
     }
 
