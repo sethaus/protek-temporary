@@ -24,9 +24,10 @@ function generateEmailHtml(data: FormData): string {
       return `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2 style="color: #333;">Yeni İletişim Formu Mesajı</h2>
-          <p><strong>Ad Soyad:</strong> ${data.name}</p>
+          <p><strong>Ad Soyad:</strong> ${data.name || '-'}</p>
           <p><strong>E-posta:</strong> ${data.email}</p>
-          <p><strong>Telefon:</strong> ${data.phone}</p>
+          <p><strong>Konu:</strong> ${data.subject || '-'}</p>
+          <p><strong>Telefon:</strong> ${data.phone || '-'}</p>
           <hr>
           <h3 style="color: #555;">Mesaj:</h3>
           <p>${data.message}</p>
@@ -36,13 +37,20 @@ function generateEmailHtml(data: FormData): string {
       return `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
           <h2 style="color: #333;">Yeni Teklif Talebi</h2>
-          <p><strong>Gönderen:</strong> ${data.name}</p>
-          <p><strong>Firma:</strong> ${data.company}</p>
+          <p><strong>Gönderen:</strong> ${data.contactPerson || data.name || '-'}</p>
+          <p><strong>Firma:</strong> ${data.companyName || data.company || '-'}</p>
           <p><strong>E-posta:</strong> ${data.email}</p>
           <p><strong>Telefon:</strong> ${data.phone}</p>
+          <p><strong>İş Ünvanı:</strong> ${data.position || '-'}</p>
           <hr>
           <h3 style="color: #555;">Talep Detayları:</h3>
-          <pre>${JSON.stringify(data.stepData, null, 2)}</pre>
+          <p><strong>Teklif Tipi:</strong> ${data.quoteType || '-'}</p>
+          <p><strong>Kategori:</strong> ${data.category || '-'}</p>
+          <p><strong>Alt Kategori:</strong> ${data.subcategory || '-'}</p>
+          <p><strong>Bütçe:</strong> ${data.budget || '-'}</p>
+          <p><strong>Zaman Çizelgesi:</strong> ${data.timeline || '-'}</p>
+          <p><strong>Proje Detayları:</strong></p>
+          <pre>${data.projectDetails || data.customRequirement || '-'}</pre>
         </div>
       `;
     case 'complaint':
