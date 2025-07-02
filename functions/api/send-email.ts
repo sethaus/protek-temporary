@@ -7,6 +7,8 @@ interface Env {
   OAUTH_CLIENT_ID: string;
   OAUTH_CLIENT_SECRET: string;
   OAUTH_REFRESH_TOKEN: string;
+  // Add the PagesFunction type to the global scope for Cloudflare
+  PagesFunction: any;
 }
 
 // Define the structure for the incoming form data
@@ -166,38 +168,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
   }
 };
-
-  // The email needs to be Base64-encoded.
-  const base64EncodedEmail = btoa(unescape(encodeURIComponent(email)));
-
-  await gmail.users.messages.send({
-    userId: 'me',
-    requestBody: {
-      raw: base64EncodedEmail
-    }
-  });
-}
-
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  try {
-    const { request, env } = context;
-    const body: FormData = await request.json();
-
-    const requiredVars: (keyof Env)[] = ['GMAIL_USER', 'OAUTH_CLIENT_ID', 'OAUTH_CLIENT_SECRET', 'OAUTH_REFRESH_TOKEN'];
-    for (const varName of requiredVars) {
-      if (!env[varName]) {
-        console.error(`Missing environment variable: ${varName}`);
-        return new Response(JSON.stringify({ success: false, message: `Server Error: Environment variable ${varName} is not set.` }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-    }
-
-    await createAndSendEmail(env, body);
-
-    return new Response(JSON.stringify({ success: true, message: 'E-posta başarıyla gönderildi.' }), {
-      status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
 
