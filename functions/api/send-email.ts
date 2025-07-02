@@ -7,8 +7,6 @@ interface Env {
   OAUTH_CLIENT_ID: string;
   OAUTH_CLIENT_SECRET: string;
   OAUTH_REFRESH_TOKEN: string;
-  // Add the PagesFunction type to the global scope for Cloudflare
-  PagesFunction: any;
 }
 
 // Define the structure for the incoming form data
@@ -163,27 +161,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error('Email sending error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu.';
     return new Response(JSON.stringify({ success: false, message: `E-posta gönderilemedi: ${errorMessage}` }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-};
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Error sending email:', error);
-    let errorMessage = 'An unknown error occurred.';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-      // Try to extract a more specific error message from the Google API response
-      const gapiError = error as any;
-      if (gapiError.errors && gapiError.errors[0] && gapiError.errors[0].message) {
-        errorMessage = gapiError.errors[0].message;
-      }
-    }
-
-    return new Response(JSON.stringify({ success: false, message: `Server Error: ${errorMessage}` }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
