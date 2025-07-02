@@ -33,7 +33,7 @@ interface ContactSection {
 const contactSections: ContactSection[] = [
   // İletişim Bilgileri
   { id: 'genel-mudurluk', title: 'Genel Müdürlük', icon: BuildingOffice2Icon, category: 'İletişim Bilgileri' },
-  { id: 'satis-ekibi', title: 'Satış Ekibi', icon: UserGroupIcon, category: 'İletişim Bilgileri' },
+
   { id: 'teknik-servis', title: 'Teknik Servis', icon: WrenchScrewdriverIcon, category: 'İletişim Bilgileri' },
   { id: 'muhasebe', title: 'Muhasebe', icon: BanknotesIcon, category: 'İletişim Bilgileri' },
   { id: 'sosyal-medya', title: 'Sosyal Medya', icon: GlobeAltIcon, category: 'İletişim Bilgileri' },
@@ -425,8 +425,8 @@ export default function ContactPage() {
                 </div>
               </section>
 
-              {/* Satış Ekibi */}
-              <section id="satis-ekibi" className="scroll-mt-28">
+
+<section id="satis-ekibi" className="hidden">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
                   <div className="flex items-center space-x-4 mb-6">
                     <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
