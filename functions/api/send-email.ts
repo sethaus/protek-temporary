@@ -1,4 +1,5 @@
-import { google } from 'googleapis';
+// We avoid heavy `googleapis` to keep bundle size small; use direct HTTP calls instead.
+// No external imports needed besides built-in `Buffer`.
 import { Buffer } from 'buffer';
 
 // Define the structure for the environment variables
@@ -97,23 +98,27 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Set up OAuth2 client
-    const oauth2Client = new google.auth.OAuth2(
-      OAUTH_CLIENT_ID,
-      OAUTH_CLIENT_SECRET,
-      'https://developers.google.com/oauthplayground' // Redirect URI, not used in server-to-server flow
-    );
+        // Obtain a fresh access token using the refresh token
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: OAUTH_CLIENT_ID,
+        client_secret: OAUTH_CLIENT_SECRET,
+        refresh_token: OAUTH_REFRESH_TOKEN,
+        grant_type: 'refresh_token',
+      }),
+    });
 
-    oauth2Client.setCredentials({ refresh_token: OAUTH_REFRESH_TOKEN });
-
-    // Get a new access token
-    const accessToken = await oauth2Client.getAccessToken();
-    if (!accessToken.token) {
-        throw new Error('Failed to create access token.');
+    if (!tokenRes.ok) {
+      throw new Error(`Token request failed with ${tokenRes.status}`);
     }
 
-    // Set up Gmail API
-    const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+    const tokenJson: { access_token?: string } = await tokenRes.json();
+    const accessToken = tokenJson.access_token;
+    if (!accessToken) {
+      throw new Error('Failed to obtain access token.');
+    }
 
     // Determine email subject
     let subject = 'Yeni Web Formu Mesajı';
@@ -141,16 +146,27 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ];
     const email = emailLines.join('\r\n');
 
-    // Encode the email in base64url format
-    const encodedMessage = Buffer.from(email).toString('base64url');
+        // Encode the email in base64url format
+    const encodedMessage = Buffer.from(email)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
 
-    // Send the email
-    await gmail.users.messages.send({
-      userId: 'me', // 'me' refers to the authenticated user
-      requestBody: {
-        raw: encodedMessage,
+    // Send the email using Gmail REST API
+    const gmailRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ raw: encodedMessage }),
     });
+
+    if (!gmailRes.ok) {
+      const errText = await gmailRes.text();
+      throw new Error(`Gmail API error ${gmailRes.status}: ${errText}`);
+    }
 
     return new Response(JSON.stringify({ success: true, message: 'Mesajınız başarıyla gönderildi.' }), {
       status: 200,
