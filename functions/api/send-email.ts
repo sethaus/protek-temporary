@@ -130,7 +130,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const htmlContent = generateEmailHtml(body);
-    const recipientEmail = 'info@protekanalitik.com'; // The final recipient
+    // Deliver to the same authenticated Gmail account so it lands in its Inbox
+    const recipientEmail = GMAIL_USER;
     const replyToEmail = body.email;
 
     // Construct the email in MIME format
